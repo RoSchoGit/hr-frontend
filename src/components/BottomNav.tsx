@@ -10,10 +10,8 @@ export const getProcessById = (id: string) => {
 };
 
 export const getTasksByProcessId = (processId: string): Task[] => {
-  const store = useTaskStore.getState();
-  return store.tasks.filter((t) => t.processId === processId);
+  return useTaskStore.getState().getTasksForProcess(processId);
 };
-
 
 const BottomNav = () => {
   const navigate = useNavigate();

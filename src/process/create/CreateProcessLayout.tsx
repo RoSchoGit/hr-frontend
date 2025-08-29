@@ -8,7 +8,7 @@ export default function CreateProcessLayout() {
     const { step } = useParams<{ step?: string }>();
 
     const [processName, setProcessName] = useState("");
-    const { tasks, setTasks } = useTaskStore();
+    const {setTasks } = useTaskStore();
 
     // Falls man direkt auf /step-2 landet ohne Prozessname, zurück zu Step 1
     useEffect(() => {
@@ -23,7 +23,6 @@ export default function CreateProcessLayout() {
                 context={{
                     processName,
                     setProcessName,
-                    tasks,
                     setTasks
                 }}
             />

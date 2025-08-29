@@ -1,7 +1,8 @@
 import { create } from "zustand";
-import type { Process } from "@/process/Process";
+import { ProcessType, type Process, ProcessStatus } from "@/process/Process";
 import { fetchProcesses, deleteProcess } from "@/process/processApi";
 import { createProcess } from "@/process/processApi";
+import { v4 as uuidv4 } from "uuid";
 
 type ProcessStore = {
   processes: Process[];
@@ -14,6 +15,7 @@ type ProcessStore = {
   deleteSelectedProcess: () => Promise<void>;
   addProcess: (process: Process) => void;
   updateProcess: (process: Process) => void;
+  createNewProcess: (title: string, description: string, type: ProcessType) => Process;
 };
 
 export const useProcessStore = create<ProcessStore>((set, get) => ({
@@ -57,6 +59,23 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
     } catch (err) {
       console.error("Fehler beim Löschen des Processes:", err);
     }
+  },
+
+  createNewProcess: (title, description, type) => {
+    const process: Process = {
+      id: uuidv4(),
+      title,
+      description,
+      type,
+      status: ProcessStatus.OPEN,
+      tasks: [],
+      industries: [],
+      history: [],
+      createdAt: new Date(),
+      creator: "currentUser" 
+    };
+    set({ selectedProcess: process });
+    return process;
   },
 
   addProcess: async (process) => {

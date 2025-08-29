@@ -7,6 +7,7 @@ export enum TaskStatus {
 }
 
 export enum TaskType {
+  NOT_SPECIFIC = "NOT SPECIFIC",
   ADMINISTRATION = "ADMINISTRATION",
   DOCUMENTATION = "DOCUMENTATION",
   TRAINING = "TRAINING",
@@ -23,6 +24,10 @@ export interface Attachment {
   uploadedBy: string;
 }
 
+interface Metadata {
+  [key: string]: any;
+}
+
 export interface Task {
   id: string;
   processId: string; // neu: kommt jetzt direkt aus der DB
@@ -32,7 +37,7 @@ export interface Task {
   creator: string;
   assignee: string;
   status: TaskStatus;
-  dueDate: Date;
+  dueDate?: Date;
   createdAt: Date;
   completedAt?: Date;
   metadata?: Metadata;
@@ -52,7 +57,7 @@ export class TaskImpl implements Task {
   creator: string;
   assignee: string;
   status: TaskStatus;
-  dueDate: Date;
+  dueDate?: Date;
   createdAt: Date;
   completedAt?: Date;
   metadata?: Metadata;
@@ -67,8 +72,8 @@ export class TaskImpl implements Task {
     description: string,
     creator: string,
     assignee: string,
-    dueDate: Date,
     position: number,
+    dueDate?: Date,
     attachments?: Attachment[],
     metadata?: Metadata
   ) {

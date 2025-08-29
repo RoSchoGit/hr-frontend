@@ -36,13 +36,13 @@ export class BaseCard extends Component<BaseCardProps> {
             dragHandleProps,
             allowEditing,
             menuOpen,
-            setMenuOpen,
+            setMenuOpen
         } = this.props;
 
         return (
             <div
                 onClick={onClick}
-                className="p-3 border-2 rounded-lg shadow-md bg-white cursor-pointer select-none hover:shadow-lg transition-shadow flex justify-between items-start"
+                className="p-3 border-2 rounded-lg shadow-md bg-white cursor-pointer select-none hover:shadow-lg transition-shadow flex"
                 style={{ borderColor }}
             >
                 {/* Linke Spalte */}
@@ -50,7 +50,7 @@ export class BaseCard extends Component<BaseCardProps> {
 
                 {/* Rechte Spalte */}
                 {(showDragHandle || allowEditing) && (
-                    <div className="flex flex-col items-end ml-4 pl-3 border-l border-gray-300 space-y-2">
+                    <div className="flex flex-col items-end ml-3 space-y-2 flex-shrink-0">
                         {showDragHandle && (
                             <div {...dragHandleProps} className="cursor-grab">
                                 {dragHandle}

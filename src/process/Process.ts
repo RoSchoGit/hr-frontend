@@ -10,6 +10,7 @@ export enum ProcessStatus {
 
 // Prozessarten (generisch, kann erweitert werden)
 export enum ProcessType {
+  NOT_SPECIFIC = "NOT_SPECIFIC",
   ONBOARDING = "ONBOARDING",
   LEAVE_REQUEST = "LEAVE_REQUEST",
   HIRE = "HIRE",

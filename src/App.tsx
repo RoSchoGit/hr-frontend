@@ -5,13 +5,13 @@ import ProfilePage from "@/pages/ProfilePage";
 import AppLayout from './layouts/AppLayout';
 import ProcessListPage from './process/ProcessListPage';
 import TaskListPage from './task/TaskListPage';
-import TaskDetailsPage from './task/TaskDetailsPage';
+import TaskPage from './task/TaskPage';
 import CreateProcessLayout from './process/create/CreateProcessLayout';
 import CreateStep1 from './process/create/CreateStep1';
 import CreateStep2 from './process/create/CreateStep2';
 import CreateStep3 from './process/create/CreateStep3';
 import ProcessEditPage from './process/ProcessEditPage';
-import ProcessInfoPage from './process/ProcessInfoPage';
+import ProcessPage from './process/ProcessPage';
 
 function App() {
   return (
@@ -25,10 +25,10 @@ function App() {
 
         <Route path="processes" element={<AppLayout />}>
           <Route index element={<ProcessListPage />} />
-          <Route path=":processId" element={<ProcessInfoPage />} />
+          <Route path=":processId" element={<ProcessPage />} />
           <Route path=":processId/edit" element={<ProcessEditPage />} />
           <Route path=":processId/tasks" element={<TaskListPage />} />
-          <Route path=":processId/task/:taskId" element={<TaskDetailsPage />} />
+          <Route path=":processId/task/:taskId" element={<TaskPage />} />
 
           <Route path="create" element={<CreateProcessLayout />}>
             <Route path="step-1" element={<CreateStep1 />} />

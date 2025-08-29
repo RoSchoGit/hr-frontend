@@ -9,19 +9,23 @@ const TaskListPage = () => {
   const { processId } = useParams<{ processId: string }>();
   const { processes } = useProcessStore();
 
-  const {
-    tasks,
-    deleteCandidate,
-    setDeleteCandidate,
-    loadTasksForProcess,
-  } = useTaskStore();
+  const { loadTasksForProcess, getTasksForProcess, deleteCandidate } = useTaskStore();
+
+  useEffect(() => {
+    if (processId) {
+      loadTasksForProcess(processId); // lädt nur, wenn noch nicht geladen
+    }
+  }, [processId, loadTasksForProcess]);
+
+  const tasks = getTasksForProcess(processId);
+
 
   const process = processes.find((p) => p.id === processId);
 
   useEffect(() => {
     if (process?.tasks) {
       loadTasksForProcess(process.id);
-      
+
     }
   }, [process?.tasks]);
 
@@ -49,7 +53,7 @@ const TaskListPage = () => {
             <div className="flex justify-end space-x-2">
               <button
                 className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => setDeleteCandidate(null)}
+                onClick={() => null} //setDeleteCandidate(null)}
               >
                 Abbrechen
               </button>
@@ -59,7 +63,7 @@ const TaskListPage = () => {
                   // Beispiel: removeTask im Store aufrufen
                   // useTaskStore.getState().removeTask(deleteCandidate.id)
                   // und anschließend
-                  setDeleteCandidate(null);
+                  // setDeleteCandidate(null);
                 }}
               >
                 Löschen

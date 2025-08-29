@@ -33,19 +33,13 @@ const TaskList = ({
   onMoveTask,
 }: TaskListProps) => {
   const [openMenuTaskId, setOpenMenuTaskId] = useState<string | null>(null);
-
   const navigate = useNavigate();
   const { processId } = useParams<{ processId: string }>();
 
-
   // Handler für Navigation
   const handleClickTask = (taskId: string) => {
-    if (processId) {
-      navigate(`/processes/${processId}/task/${taskId}`);
-    } else {
-      let proId = useProcessStore.getState().selectedProcess?.id;
-      navigate(`/processes/${proId}/task/${taskId}`);
-    }
+    const proId = processId || useProcessStore.getState().selectedProcess?.id;
+    if (proId) navigate(`/processes/${proId}/task/${taskId}`);
   };
 
   // Schließen bei Klick außerhalb
@@ -74,55 +68,68 @@ const TaskList = ({
     }
   };
 
-  // Mit Drag & Drop
-  if (showReorderButtons && (setTasks || onMoveTask)) {
+  if (tasks.length === 0) {
     return (
       <>
         <Header title={processName} />
-        <DndContext collisionDetection={closestCenter} onDragEnd={(handleDragEnd)}>
-          <SortableContext
-            items={tasks.map((t) => t.id)}
-            strategy={verticalListSortingStrategy}
-          >
-            <div className="flex flex-col gap-1 py-1">
-              {tasks.map((task) => (
-                <SortableTaskCard
-                  key={task.id}
-                  task={task}
-                  setDeleteCandidate={setDeleteCandidate}
-                  showReorderButtons={showReorderButtons}
-                  allowEditing={allowEditing}
-                  menuOpen={openMenuTaskId === task.id}
-                  setMenuOpen={(open) =>
-                    setOpenMenuTaskId(open ? task.id : null)
-                  }
-                  onClick={() => handleClickTask(task.id)} // Navigation im Drag&Drop-Modus
-                />
-              ))}
-            </div>
-          </SortableContext>
-        </DndContext>
+        <div className="p-4 sm:p-6">
+          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 sm:p-6 text-center shadow-sm">
+            <h3 className="font-semibold text-lg mb-2">Keine Tasks vorhanden</h3>
+            <p className="text-sm sm:text-base">
+              Leider existieren noch keine Tasks für diesen Prozess.
+              Füge über das Formular unten neue Tasks hinzu.
+            </p>
+          </div>
+        </div>
       </>
     );
   }
 
-  // Ohne Drag & Drop
-  return (
-    <>
-      <Header title={processName} />
-      <div className="flex flex-col gap-1 py-1">
-        {tasks.map((task) => (
+  const renderTaskCards = () =>
+    tasks.map((task) => (
+      <div key={task.id} className="w-full">
+        {showReorderButtons && (setTasks || onMoveTask) ? (
+          <SortableTaskCard
+            task={task}
+            setDeleteCandidate={setDeleteCandidate}
+            showReorderButtons={showReorderButtons}
+            allowEditing={allowEditing}
+            menuOpen={openMenuTaskId === task.id}
+            setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
+            onClick={() => handleClickTask(task.id)}
+          />
+        ) : (
           <TaskCard
-            key={task.id}
             task={task}
             setDeleteCandidate={setDeleteCandidate}
             showReorderButtons={false}
             allowEditing={allowEditing}
-            onClick={() => handleClickTask(task.id)} // Navigation im Normalmodus
+            onClick={() => handleClickTask(task.id)}
             menuOpen={openMenuTaskId === task.id}
             setMenuOpen={(open: boolean) => setOpenMenuTaskId(open ? task.id : null)}
           />
-        ))}
+        )}
+      </div>
+    ));
+
+  return (
+    <>
+      <Header title={processName} />
+
+      {/* Nur hier geändert: gap-2 statt gap-3 */}
+      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4">
+        {showReorderButtons && (setTasks || onMoveTask) ? (
+          <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
+            <SortableContext
+              items={tasks.map((t) => t.id)}
+              strategy={verticalListSortingStrategy}
+            >
+              {renderTaskCards()}
+            </SortableContext>
+          </DndContext>
+        ) : (
+          renderTaskCards()
+        )}
       </div>
     </>
   );

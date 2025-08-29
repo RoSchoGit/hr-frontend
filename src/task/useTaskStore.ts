@@ -1,10 +1,11 @@
 import { create } from "zustand";
 import type { Task } from "@/task/Task";
-import { fetchTasks, deleteTask, fetchTasksForProcess } from "@/task/taskApi";
+import { fetchTasksForProcess, deleteTask, fetchTasks } from "@/task/taskApi";
+import { arrayMove } from "@dnd-kit/sortable";
 
 type TaskStore = {
   tasksById: Record<string, Task>;
-  tasks: Task[];
+  tasksByProcessId: Record<string, Task[]>;   // 👈 NEU
   selectedTask: Task | null;
   deleteCandidate: Task | null;
 
@@ -14,25 +15,26 @@ type TaskStore = {
 
   loadTasks: () => Promise<void>;
   loadTasksForProcess: (processId: string) => Promise<void>;
+  getTasksForProcess: (processId?: string) => Task[];   // 👈 NEU
+
   updateTask: (task: Task) => void;
   addTask: (task: Task) => void;
   deleteSelectedTask: () => Promise<void>;
-  moveTask: (index: number, direction: number) => void;
+  moveTask: (processId: string, oldIndex: number, newIndex: number) => void;
+  getTaskById: (id?: string) => Task | undefined;
 };
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
   tasksById: {},
-  tasks: [],
+  tasksByProcessId: {},   // 👈 NEU
   selectedTask: null,
   deleteCandidate: null,
 
   setTasks: (tasks) =>
     set((state) => {
       const updatedById = { ...state.tasksById };
-      for (const t of tasks) {
-        updatedById[t.id] = t;
-      }
-      return { tasks, tasksById: updatedById };
+      for (const t of tasks) updatedById[t.id] = t;
+      return { tasksById: updatedById };
     }),
 
   selectTask: (task) => set({ selectedTask: task }),
@@ -47,11 +49,17 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     }
   },
 
+  getTaskById: (id?: string) => {
+    if (!id) return undefined;
+    return get().tasksById[id];
+  },
+
   loadTasksForProcess: async (processId) => {
-    if (!processId) {
-      set({ tasks: [] });
-      return;
-    }
+    if (!processId) return;
+
+    // ⚡️ erst prüfen, ob schon geladen
+    if (get().tasksByProcessId[processId]) return;
+
     try {
       const tasks = await fetchTasksForProcess(processId);
       const tasksMap: Record<string, Task> = {};
@@ -59,33 +67,59 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
       set((state) => ({
         tasksById: { ...state.tasksById, ...tasksMap },
-        tasks, // nur für UI-Anzeige
+        tasksByProcessId: { ...state.tasksByProcessId, [processId]: tasks },
       }));
     } catch (err) {
       console.error("Fehler beim Laden der Tasks für den Prozess:", err);
-      set({ tasks: [] });
     }
   },
 
+  // 👇 das ist jetzt die EINZIGE Funktion, die du im UI verwendest
+  getTasksForProcess: (processId) => {
+    if (!processId) return [];
+    return get().tasksByProcessId[processId] ?? [];
+  },
+
   updateTask: (task) =>
-    set((state) => ({
-      tasksById: { ...state.tasksById, [task.id]: task },
-      tasks: state.tasks.map((t) => (t.id === task.id ? task : t)),
-    })),
+    set((state) => {
+      const tasksByProcessId = { ...state.tasksByProcessId };
+      if (task.processId && tasksByProcessId[task.processId]) {
+        tasksByProcessId[task.processId] = tasksByProcessId[task.processId].map((t) =>
+          t.id === task.id ? task : t
+        );
+      }
+      return {
+        tasksById: { ...state.tasksById, [task.id]: task },
+        tasksByProcessId,
+      };
+    }),
 
   addTask: (task) =>
-    set((state) => ({
-      tasksById: { ...state.tasksById, [task.id]: task },
-      tasks: [...state.tasks, task],
-    })),
+    set((state) => {
+      const tasksByProcessId = { ...state.tasksByProcessId };
+      if (task.processId) {
+        tasksByProcessId[task.processId] = [
+          ...(tasksByProcessId[task.processId] ?? []),
+          task,
+        ];
+      }
+      return {
+        tasksById: { ...state.tasksById, [task.id]: task },
+        tasksByProcessId,
+      };
+    }),
 
-  moveTask: (index, direction) => {
-    const tasks = [...get().tasks];
-    const target = index + direction;
-    if (target < 0 || target >= tasks.length) return;
-    [tasks[index], tasks[target]] = [tasks[target], tasks[index]];
-    set({ tasks });
+  moveTask: (processId: string, oldIndex: number, newIndex: number) => {
+    const tasks = [...(get().tasksByProcessId[processId] ?? [])];
+    if (!tasks.length) return;
+
+    const updatedTasks = arrayMove(tasks, oldIndex, newIndex);
+
+    set((state) => ({
+      tasksByProcessId: { ...state.tasksByProcessId, [processId]: updatedTasks },
+    }));
   },
+
 
   deleteSelectedTask: async () => {
     const task = get().deleteCandidate;
@@ -95,9 +129,17 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       set((state) => {
         const newById = { ...state.tasksById };
         delete newById[task.id];
+
+        const tasksByProcessId = { ...state.tasksByProcessId };
+        if (task.processId && tasksByProcessId[task.processId]) {
+          tasksByProcessId[task.processId] = tasksByProcessId[task.processId].filter(
+            (t) => t.id !== task.id
+          );
+        }
+
         return {
           tasksById: newById,
-          tasks: state.tasks.filter((t) => t.id !== task.id),
+          tasksByProcessId,
           deleteCandidate: null,
         };
       });
@@ -106,5 +148,3 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     }
   },
 }));
-
-export default useTaskStore;
