@@ -65,7 +65,7 @@ const ProcessListPage = () => {
   return (
     <div
       ref={listRef}
-      className="flex flex-col min-h-full gap-2 p-2 sm:p-4 overflow-y-auto"
+      className="flex flex-col-reverse min-h-full gap-2 p-2 sm:p-4 overflow-y-auto"
       style={{ maxHeight: "100%" }}
     >
       {sortedProcesses.map((process) => (

@@ -19,7 +19,6 @@ const TaskListPage = () => {
 
   const tasks = getTasksForProcess(processId);
 
-
   const process = processes.find((p) => p.id === processId);
 
   useEffect(() => {

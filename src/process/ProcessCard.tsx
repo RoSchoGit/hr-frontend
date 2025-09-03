@@ -52,12 +52,12 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
 
     const getMaxTaskDueDate = (tasks?: Task[]): Date | undefined => {
       if (!tasks || tasks.length === 0) return undefined;
-    
+
       const dates = tasks
         .map((t) => t.dueDate ? new Date(t.dueDate) : undefined)
         .filter((d): d is Date => d !== undefined) // TypeScript weiß jetzt: alles Date
         .sort((a, b) => b.getTime() - a.getTime());
-    
+
       return dates[0];
     };
 
@@ -65,6 +65,7 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
 
     return (
       <BaseCard
+        title={process.title}
         borderColor={status.border}
         onClick={() => handleClick(process)}
         onEdit={() => onEdit?.(process)}
@@ -73,6 +74,8 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
         allowEditing={true}
         menuOpen={menuOpen ?? false}
         setMenuOpen={setMenuOpen}
+        dueColor={dueColor.bg}  
+        statusColor={status.bg}    
       >
         <div className="flex flex-wrap items-center gap-2">
           {process.type && (

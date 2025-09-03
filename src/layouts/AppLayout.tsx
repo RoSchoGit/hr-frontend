@@ -1,7 +1,5 @@
-import Header from "@/components/Header";
 import BottomNav from "@/components/BottomNav";
-import { Outlet, useParams, useLocation } from "react-router-dom";
-import { useProcessStore } from "@/process/useProcessStore";
+import { Outlet } from "react-router-dom";
 
 const AppLayout = () => {
   return (

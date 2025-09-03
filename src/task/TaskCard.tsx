@@ -77,7 +77,10 @@ export class TaskCard extends Component<TaskCardProps, TaskCardState> {
 
     return (
       <BaseCard
+        title={task.title}
         borderColor={status.border}
+        dueColor={dueColor?.bg}
+        statusColor={status?.bg}
         onClick={onClick}
         onEdit={() => onEdit?.(task)}
         onDelete={() => setDeleteCandidate?.(task)}

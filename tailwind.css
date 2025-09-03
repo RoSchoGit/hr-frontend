@@ -1,0 +1,6 @@
+/* tailwind.css */
+@layer utilities {
+  .hyphens-auto {
+    hyphens: auto;
+  }
+}

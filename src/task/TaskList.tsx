@@ -12,6 +12,7 @@ import TaskCard from "./TaskCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProcessStore } from "@/process/useProcessStore";
 import Header from "@/components/Header";
+import { useRef } from "react";
 
 type TaskListProps = {
   processName: string;
@@ -41,6 +42,14 @@ const TaskList = ({
     const proId = processId || useProcessStore.getState().selectedProcess?.id;
     if (proId) navigate(`/processes/${proId}/task/${taskId}`);
   };
+
+  const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollTop = listRef.current.scrollHeight;
+    }
+  }, [tasks.length]);
 
   // Schließen bei Klick außerhalb
   useEffect(() => {
@@ -90,23 +99,24 @@ const TaskList = ({
       <div key={task.id} className="w-full">
         {showReorderButtons && (setTasks || onMoveTask) ? (
           <SortableTaskCard
+            key={task.id}
             task={task}
-            setDeleteCandidate={setDeleteCandidate}
-            showReorderButtons={showReorderButtons}
+            showReorderButtons
             allowEditing={allowEditing}
+            setDeleteCandidate={setDeleteCandidate}
             menuOpen={openMenuTaskId === task.id}
             setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
             onClick={() => handleClickTask(task.id)}
           />
         ) : (
           <TaskCard
+            key={task.id}
             task={task}
-            setDeleteCandidate={setDeleteCandidate}
-            showReorderButtons={false}
             allowEditing={allowEditing}
-            onClick={() => handleClickTask(task.id)}
+            setDeleteCandidate={setDeleteCandidate}
             menuOpen={openMenuTaskId === task.id}
-            setMenuOpen={(open: boolean) => setOpenMenuTaskId(open ? task.id : null)}
+            setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
+            onClick={() => handleClickTask(task.id)}
           />
         )}
       </div>

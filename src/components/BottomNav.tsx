@@ -52,31 +52,32 @@ const BottomNav = () => {
 
   return (
     <footer className="h-10 flex items-center justify-between px-4 bg-indigo-100">
-      {/* Navigation Links (Home, Settings, Profile) */}
-      <div className="flex gap-6">
-        <NavLink to="/processes" className="flex flex-col items-center text-sm">
-          <List className="h-6 w-6" />
-        </NavLink>
-        <NavLink to="/settings" className="flex flex-col items-center text-sm">
-          <Settings className="h-6 w-6" />
-        </NavLink>
-        <NavLink to="/profile" className="flex flex-col items-center text-sm">
-          <User className="h-6 w-6" />
-        </NavLink>
+      {/* Linke Icons */}
+      <div className="flex flex-1">
+        <div className="flex w-full max-w-36 justify-between">
+          <NavLink to="/processes" className="flex flex-col items-center text-sm">
+            <List className="h-6 w-6" />
+          </NavLink>
+          <NavLink to="/settings" className="flex flex-col items-center text-sm">
+            <Settings className="h-6 w-6" />
+          </NavLink>
+          <NavLink to="/profile" className="flex flex-col items-center text-sm">
+            <User className="h-6 w-6" />
+          </NavLink>
 
-        {/* Plus-Button */}
-        {(isOnProcessList || isOnTaskList) && (
-          <button
-            onClick={handlePlusClick}
-            className="text-blue-600 hover:text-blue-800"
-          >
-            <Plus className="h-6 w-6" />
-          </button>
-        )}
+          {(isOnProcessList || isOnTaskList) && (
+            <button
+              onClick={handlePlusClick}
+              className="text-blue-600 hover:text-blue-800"
+            >
+              <Plus className="h-6 w-6" />
+            </button>
+          )}
+        </div>
       </div>
 
-      {/* Aktions-Buttons: Zurück */}
-      <div className="flex items-center gap-4">
+      {/* Zurück-Button */}
+      <div className="flex items-center flex-shrink-0 ml-2">
         {showBackButton && (
           <button
             onClick={handleBack}
