@@ -22,6 +22,8 @@ export default function CreateStep2() {
     const process = useProcessStore.getState().selectedProcess;
     const { addTask: addTaskToStore, moveTask, setDeleteCandidate, getTasksForProcess } = useTaskStore();
 
+    console.log(process);
+
     if (!process) return <div>Kein Prozess gefunden.</div>;
 
     const tasks = getTasksForProcess(process.id);

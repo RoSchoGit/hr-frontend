@@ -14,13 +14,18 @@ export async function fetchProcesses(): Promise<Process[]> {
   return data;
 }
 
-export async function createProcess(task: Partial<Process>): Promise<Process> {
+export async function createProcess(process: Partial<Process>): Promise<Process> {
+  //const body = serializeProcess(process); // hier serialisieren!
   const response = await fetch(BASE_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(task),
+    body: JSON.stringify(process),
   });
-  if (!response.ok) throw new Error("Fehler beim Erstellen eines Processes");
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("Backend-Fehler:", text);
+    throw new Error("Fehler beim Erstellen eines Processes");
+  }
   return response.json();
 }
 
@@ -30,4 +35,5 @@ export async function deleteProcess(id: string): Promise<void> {
   });
   if (!response.ok) throw new Error("Fehler beim Löschen des Processes");
 }
+
 
