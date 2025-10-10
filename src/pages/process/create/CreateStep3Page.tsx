@@ -1,9 +1,9 @@
 import { useNavigate } from "react-router-dom";
-import useProcessStore from "../useProcessStore";
-import { useTaskStore } from "@/task/useTaskStore";
-import TaskCard from "@/task/TaskCard";
-import { createProcess } from "../processApi";
-import { createTask } from "@/task/taskApi";
+import useProcessStore from "../../../features/process/store/useProcessStore";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
+import TaskCard from "@/features/task/components/TaskCard";
+import { createProcess } from "../../../features/process/api/processApi";
+import { createTask } from "@/features/task/api/taskApi";
 
 export default function CreateStep3() {
     const process = useProcessStore.getState().selectedProcess;

@@ -2,45 +2,50 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import SettingsPage from "@/pages/SettingsPage";
 import ProfilePage from "@/pages/ProfilePage";
+import LogoutPage from './pages/LogoutPage';
 import AppLayout from './layouts/AppLayout';
-import ProcessListPage from './process/ProcessListPage';
-import TaskListPage from './task/TaskListPage';
-import TaskPage from './task/TaskPage';
-import CreateProcessLayout from './process/create/CreateProcessLayout';
-import CreateStep1 from './process/create/CreateStep1';
-import CreateStep2 from './process/create/CreateStep2';
-import CreateStep3 from './process/create/CreateStep3';
-import ProcessEditPage from './process/ProcessEditPage';
-import ProcessPage from './process/ProcessPage';
+import ProcessListPage from './pages/process/ProcessListPage';
+import TaskListPage from './pages/task/TaskListPage';
+import TaskPage from './pages/task/TaskPage';
+import CreateProcessLayout from './pages/process/create/CreateProcessLayout';
+import CreateStep1 from './pages/process/create/CreateStep1Page';
+import CreateStep2 from './pages/process/create/CreateStep2Page';
+import CreateStep3 from './pages/process/create/CreateStep3Page';
+import ProcessEditPage from './pages/process/ProcessEditPage';
+import ProcessPage from './pages/process/ProcessPage';
+import { Navigate } from 'react-router-dom';
+import { KeycloakProvider } from './keycloak/KeycloakProvider';
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<AppLayout />}>
+    <KeycloakProvider>
+      <Router>
+        <Routes>
+          <Route path="/" element={<Navigate to="/processes" replace />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/settings" element={<SettingsPage />} />
           <Route path="/profile" element={<ProfilePage />} />
-        </Route>
+          <Route path="/logout" element={<LogoutPage />} />
 
-        <Route path="processes" element={<AppLayout />}>
-          <Route index element={<ProcessListPage />} />
-          <Route path=":processId" element={<ProcessPage />} />
-          <Route path=":processId/edit" element={<ProcessEditPage />} />
-          <Route path=":processId/tasks" element={<TaskListPage />} />
-          <Route path=":processId/task/:taskId" element={<TaskPage />} />
+          <Route path="/processes" element={<AppLayout />}>
+            <Route index element={<ProcessListPage />} />
+            <Route path=":processId" element={<ProcessPage />} />
+            <Route path=":processId/edit" element={<ProcessEditPage />} />
+            <Route path=":processId/tasks" element={<TaskListPage />} />
+            <Route path=":processId/task/:taskId" element={<TaskPage />} />
 
-          <Route path="create" element={<CreateProcessLayout />}>
-            <Route path="step-1" element={<CreateStep1 />} />
-            <Route path="step-2" element={<CreateStep2 />} />
-            <Route path="step-3" element={<CreateStep3 />} />
+            <Route path="create" element={<CreateProcessLayout />}>
+              <Route path="step-1" element={<CreateStep1 />} />
+              <Route path="step-2" element={<CreateStep2 />} />
+              <Route path="step-3" element={<CreateStep3 />} />
+            </Route>
           </Route>
-        </Route>
 
-      </Routes>
-    </Router>
-
-
+          <Route path="*" element={<Navigate to="/processes" replace />} />
+        </Routes>
+      </Router>
+    </KeycloakProvider>
   );
 }
 

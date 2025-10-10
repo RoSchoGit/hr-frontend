@@ -1,8 +1,9 @@
 import { create } from "zustand";
-import { ProcessType, type Process, ProcessStatus } from "@/process/Process";
-import { fetchProcesses, deleteProcess } from "@/process/processApi";
-import { createProcess } from "@/process/processApi";
+import { ProcessType, type Process, ProcessStatus } from "@/features/process/Process";
+import { fetchProcesses, deleteProcess } from "@/features/process/api/processApi";
+import { createProcess } from "@/features/process/api/processApi";
 import { v4 as uuidv4 } from "uuid";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
 
 type ProcessStore = {
   processes: Process[];
@@ -25,12 +26,12 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
 
   setProcesses: (processes) => set({ processes }),
   selectProcess: (process) => set({ selectedProcess: process }),
-  setDeleteCandidate: (process) => set({ deleteCandidate: process }),
+  setDeleteCandidate: (process: Process | null) => set({ deleteCandidate: process }),
 
   loadProcesses: async () => {
     try {
       const processes = await fetchProcesses();
-  
+
       const parsedProcesses = processes.map(p => ({
         ...p,
         tasks: p.tasks ?? [],
@@ -40,7 +41,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
         dueDate: p.dueDate ? new Date(p.dueDate) : undefined,
         completedAt: p.completedAt ? new Date(p.completedAt) : undefined,
       }));
-  
+
       set({ processes: parsedProcesses });
     } catch (err) {
       console.error("Fehler beim Laden der Processes:", err);
@@ -50,16 +51,22 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
   deleteSelectedProcess: async () => {
     const process = get().deleteCandidate;
     if (!process) return;
+
     try {
+      const { deleteTasksByProcessId } = useTaskStore.getState();
+
+      await deleteTasksByProcessId(process.id);
       await deleteProcess(process.id);
+
       set((state) => ({
-        processes: state.processes.filter((t) => t.id !== process.id),
-        deleteCandidate: null,
+        processes: state.processes.filter((p) => p.id !== process.id),
+        deleteCandidate: null, // Dialog schließen
       }));
     } catch (err) {
-      console.error("Fehler beim Löschen des Processes:", err);
+      console.error("Fehler beim Löschen des Prozesses:", err);
     }
   },
+
 
   createNewProcess: (title, description, type) => {
     const process: Process = {
@@ -72,7 +79,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
       industries: [],
       history: [],
       createdAt: new Date(),
-      creator: "currentUser" 
+      creator: "currentUser"
     };
     set({ selectedProcess: process });
     return process;

@@ -1,5 +1,5 @@
-import { Industry } from "../Process";
-import { TaskType } from "@/task/Task";
+import { Industry } from "../../../features/process/Process";
+import { TaskType } from "@/features/task/Task";
 
 
 export interface MetadataField {

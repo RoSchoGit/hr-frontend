@@ -1,9 +1,9 @@
 import { Component } from "react";
-import type { Process } from "@/process/Process";
+import type { Process } from "@/features/process/Process";
 import { StatusUtils } from "@/utils/StatusUtils";
 import { DueDateUtils } from "@/utils/DueDateUtils";
 import { BaseCard } from "@/components/BaseCard";
-import type { Task } from "@/task/Task";
+import type { Task } from "@/features/task/Task";
 
 type ProcessCardProps = {
   process: Process;

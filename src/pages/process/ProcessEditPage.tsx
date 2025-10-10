@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { useProcessStore } from "@/process/useProcessStore";
-import type { Process } from "./Process";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
+import type { Process } from "../../features/process/Process";
 
 const ProcessEditPage = () => {
     const { processId } = useParams<{ processId: string }>();

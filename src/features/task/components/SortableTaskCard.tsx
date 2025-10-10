@@ -3,7 +3,7 @@ import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import TaskCard from "./TaskCard";
 import { GripVertical } from "lucide-react";
-import type { Task } from "./Task";
+import type { Task } from "../Task";
 
 type SortableTaskCardProps = {
   task: Task;
@@ -18,8 +18,8 @@ type SortableTaskCardProps = {
 const SortableTaskCard = ({
   task,
   setDeleteCandidate,
-  showReorderButtons = false,
-  allowEditing = false,
+  showReorderButtons,
+  allowEditing,
   menuOpen,
   setMenuOpen,
   onClick,

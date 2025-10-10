@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { useProcessStore } from "@/process/useProcessStore";
-import { ProcessType } from "@/process/Process";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
+import { ProcessType } from "@/features/process/Process";
 
 const processTemplates = [
   { id: "p1", name: "Onboarding neuer Mitarbeiter", type: ProcessType.ONBOARDING },

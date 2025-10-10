@@ -1,17 +1,20 @@
-import type { Task } from "@/task/Task";
+import type { Task } from "../Task";
+import { authFetch } from "@/services/authFetch";
 
 const BASE_URL = "http://localhost:8080/tasks";
 
 export async function fetchTasks(): Promise<Task[]> {
-  const response = await fetch(BASE_URL);
+  const response = await authFetch(BASE_URL);
   if (!response.ok) throw new Error("Fehler beim Laden der Tasks");
   return response.json();
 }
 
 export async function createTask(task: Partial<Task>): Promise<Task> {
-  const response = await fetch(BASE_URL, {
+  const response = await authFetch(BASE_URL, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json"
+    },
     body: JSON.stringify(task),
   });
   if (!response.ok) throw new Error("Fehler beim Erstellen eines Tasks");
@@ -19,9 +22,10 @@ export async function createTask(task: Partial<Task>): Promise<Task> {
 }
 
 export async function deleteTask(id: string): Promise<void> {
-  const response = await fetch(`${BASE_URL}/${id}`, {
-    method: "DELETE",
-  });
+  const response = await authFetch(`${BASE_URL}/${id}`,
+    {
+      method: "DELETE"
+    });
   if (!response.ok) throw new Error("Fehler beim Löschen des Tasks");
 }
 
@@ -30,7 +34,7 @@ export async function deleteTask(id: string): Promise<void> {
  * Backend: GET /tasks/process/{processId}
  */
 export async function fetchTasksForProcess(processId: string): Promise<Task[]> {
-  const response = await fetch(`${BASE_URL}/process/${processId}`);
+  const response = await authFetch(`${BASE_URL}/process/${processId}`);
   if (!response.ok) throw new Error("Fehler beim Laden der Tasks für den Prozess");
   return response.json();
 }
@@ -44,7 +48,7 @@ export async function fetchTasksByIds(taskIds: string[]): Promise<Task[]> {
 
   const query = taskIds.map((id) => `ids=${id}`).join("&");
   const url = `${BASE_URL}/tasks?${query}`;
-  const response = await fetch(url);
+  const response = await authFetch(url);
   if (!response.ok) throw new Error("Fehler beim Laden der Tasks nach IDs");
   return response.json();
 }

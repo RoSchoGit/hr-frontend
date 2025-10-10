@@ -1,4 +1,3 @@
-import AppLayout from "@/layouts/AppLayout";
 
 function SettingsPage() {
 

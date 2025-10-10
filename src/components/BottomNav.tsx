@@ -1,8 +1,8 @@
 import { User, Settings, ArrowLeft, Plus, List } from "lucide-react";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
-import { useProcessStore } from "@/process/useProcessStore";
-import { useTaskStore } from "@/task/useTaskStore";
-import type { Task } from "@/task/Task";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
+import type { Task } from "@/features/task/Task";
 
 export const getProcessById = (id: string) => {
   const store = useProcessStore.getState();

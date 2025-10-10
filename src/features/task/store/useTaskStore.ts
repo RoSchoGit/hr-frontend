@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import type { Task } from "@/task/Task";
-import { fetchTasksForProcess, deleteTask, fetchTasks } from "@/task/taskApi";
+import type { Task } from "../Task";
+import { fetchTasksForProcess, deleteTask, fetchTasks } from "../api/taskApi";
 import { arrayMove } from "@dnd-kit/sortable";
 
 type TaskStore = {
@@ -22,6 +22,7 @@ type TaskStore = {
   deleteSelectedTask: () => Promise<void>;
   moveTask: (processId: string, oldIndex: number, newIndex: number) => void;
   getTaskById: (id?: string) => Task | undefined;
+  deleteTasksByProcessId: (processId: string) => Promise<void>; // 👈 hinzufügen
 };
 
 export const useTaskStore = create<TaskStore>((set, get) => ({
@@ -74,7 +75,33 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
     }
   },
 
-  // 👇 das ist jetzt die EINZIGE Funktion, die du im UI verwendest
+  deleteTasksByProcessId: async (processId: string) => {
+    try {
+      // 👉 Falls deine API sowas unterstützt
+      // await deleteTasksForProcess(processId);
+
+      set((state) => {
+        const newById = { ...state.tasksById };
+        const tasks = state.tasksByProcessId[processId] ?? [];
+
+        // alle Task-IDs aus tasksById entfernen
+        for (const t of tasks) {
+          delete newById[t.id];
+        }
+
+        const newByProcessId = { ...state.tasksByProcessId };
+        delete newByProcessId[processId];
+
+        return {
+          tasksById: newById,
+          tasksByProcessId: newByProcessId,
+        };
+      });
+    } catch (err) {
+      console.error("Fehler beim Löschen der Tasks für Prozess:", err);
+    }
+  },
+
   getTasksForProcess: (processId) => {
     if (!processId) return [];
     return get().tasksByProcessId[processId] ?? [];

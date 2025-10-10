@@ -1,14 +1,14 @@
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { TaskImpl, TaskStatus, TaskType } from "@/task/Task";
-import type { Attachment } from "@/task/Task";
-import TaskList from "@/task/TaskList";
-import { useTaskStore } from "@/task/useTaskStore";
-import useProcessStore from "../useProcessStore";
+import { TaskImpl, TaskStatus, TaskType } from "@/features/task/Task";
+import type { Attachment } from "@/features/task/Task";
+import TaskList from "@/features/task/components/TaskList";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
+import useProcessStore from "../../../features/process/store/useProcessStore";
 import { metadataTemplates } from "./metadataTemplates";
 import type { MetadataField } from "./metadataTemplates";
-import type { Metadata } from "../Process";
+import type { Metadata } from "../../../features/process/Process";
 import { TextIcon, Tally5Icon, CalendarIcon } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import { useEffect, useRef } from "react"; // ⬅️ useRef ergänzt

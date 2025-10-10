@@ -1,35 +1,34 @@
 // src/task/TaskListPage.tsx
 import { useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useTaskStore } from "@/task/useTaskStore";
-import { useProcessStore } from "@/process/useProcessStore";
-import TaskList from "@/task/TaskList";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
+import TaskList from "@/features/task/components/TaskList";
+import EmptyState from "@/components/EmptyState";
 
 const TaskListPage = () => {
   const { processId } = useParams<{ processId: string }>();
-  const { processes } = useProcessStore();
+  const { processes, loadProcesses } = useProcessStore();
+  const { loadTasksForProcess, getTasksForProcess, deleteCandidate, deleteSelectedTask, setDeleteCandidate } = useTaskStore();
 
-  const { loadTasksForProcess, getTasksForProcess, deleteCandidate } = useTaskStore();
-
+  // Minimal: immer neu laden (kein Check)
   useEffect(() => {
+    loadProcesses();
     if (processId) {
-      loadTasksForProcess(processId); // lädt nur, wenn noch nicht geladen
+      loadTasksForProcess(processId);
     }
-  }, [processId, loadTasksForProcess]);
+  }, [processId, loadProcesses, loadTasksForProcess]);
 
   const tasks = getTasksForProcess(processId);
-
   const process = processes.find((p) => p.id === processId);
 
-  useEffect(() => {
-    if (process?.tasks) {
-      loadTasksForProcess(process.id);
-
-    }
-  }, [process?.tasks]);
-
   if (!process) {
-    return <div className="p-4">Prozess nicht gefunden.</div>;
+    return (
+      <EmptyState
+        title="Prozess nicht gefunden"
+        message="Der angeforderte Prozess existiert nicht oder wurde gelöscht."
+      />
+    );
   }
 
   return (
@@ -37,12 +36,11 @@ const TaskListPage = () => {
       <TaskList
         processName={process.title}
         tasks={tasks}
-        allowEditing={false}
         showReorderButtons={false}
+        setDeleteCandidate={setDeleteCandidate}
       />
 
       {deleteCandidate && (
-        /* Dein Delete-Modal hier (wie vorher). */
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg w-80">
             <h2 className="text-lg font-bold mb-4">Task löschen?</h2>
@@ -52,18 +50,13 @@ const TaskListPage = () => {
             <div className="flex justify-end space-x-2">
               <button
                 className="px-4 py-2 bg-gray-300 rounded"
-                onClick={() => null} //setDeleteCandidate(null)}
+                onClick={() => setDeleteCandidate(null)}
               >
                 Abbrechen
               </button>
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded"
-                onClick={() => {
-                  // Beispiel: removeTask im Store aufrufen
-                  // useTaskStore.getState().removeTask(deleteCandidate.id)
-                  // und anschließend
-                  // setDeleteCandidate(null);
-                }}
+                onClick={deleteSelectedTask}
               >
                 Löschen
               </button>

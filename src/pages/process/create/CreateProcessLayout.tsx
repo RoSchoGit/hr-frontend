@@ -1,7 +1,6 @@
 import { Outlet, useNavigate, useParams } from "react-router-dom";
 import { useState, useEffect } from "react";
-import { useTaskStore } from "@/task/useTaskStore";
-import Header from "@/components/Header";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
 
 export default function CreateProcessLayout() {
     const navigate = useNavigate();

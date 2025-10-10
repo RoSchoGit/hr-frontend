@@ -1,9 +1,10 @@
-import type { Process } from "@/process/Process";
+import type { Process } from "@/features/process/Process";
 import { useEffect, useRef, useMemo, useState } from "react";
-import { useProcessStore } from "@/process/useProcessStore";
-import { useTaskStore } from "@/task/useTaskStore";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
+import { useTaskStore } from "@/features/task/store/useTaskStore";
 import { useNavigate } from "react-router-dom";
-import ProcessCard from "./ProcessCard";
+import ProcessCard from "@/features/process/components/ProcessCard";
+import Loader from "@/components/Loader";
 
 const ProcessListPage = () => {
   const {
@@ -11,7 +12,8 @@ const ProcessListPage = () => {
     deleteCandidate,
     setDeleteCandidate,
     loadProcesses,
-    selectProcess
+    selectProcess,
+    deleteSelectedProcess
   } = useProcessStore();
   const { loadTasksForProcess } = useTaskStore();
   const navigate = useNavigate();
@@ -25,10 +27,10 @@ const ProcessListPage = () => {
   // Sortierung: ARCHIVED → DONE → OPEN → IN_PROGRESS
   const sortedProcesses = useMemo(() => {
     const order: Record<Process["status"], number> = {
-      ARCHIVED: 0,
-      DONE: 1,
-      OPEN: 2,
-      IN_PROGRESS: 3
+      ARCHIVED: 3,
+      DONE: 2,
+      OPEN: 1,
+      IN_PROGRESS: 0
     };
     return [...(processes || [])].sort((a, b) => order[a.status] - order[b.status]);
   }, [processes]);
@@ -46,10 +48,6 @@ const ProcessListPage = () => {
     navigate(`${process.id}/tasks`);
   };
 
-  const handleDelete = () => {
-    setDeleteCandidate(null);
-  };
-
   const handleEditProcess = (process: Process) => {
     navigate(`/processes/${process.id}/edit`);
   };
@@ -59,7 +57,12 @@ const ProcessListPage = () => {
   };
 
   if (!sortedProcesses || sortedProcesses.length == 0) {
-    return (<div>Keine Prozesse verfügbar. </div>)
+    return (
+      <div style={{ minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
+        <Loader loading={true} size={36} message="Prozesse werden geladen…" />
+      </div>
+    )
+
   }
 
   return (
@@ -98,7 +101,7 @@ const ProcessListPage = () => {
               </button>
               <button
                 className="px-4 py-2 bg-red-500 text-white rounded w-full sm:w-auto"
-                onClick={handleDelete}
+                onClick={deleteSelectedProcess}
               >
                 Löschen
               </button>

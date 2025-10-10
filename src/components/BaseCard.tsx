@@ -1,5 +1,6 @@
 import { Component, createRef } from "react";
 import { MoreVertical, Pencil, Trash, Info, ChevronDown, ChevronRight } from "lucide-react";
+import SmartText from "./SmartText";
 
 type BaseCardProps = {
     title: string,
@@ -83,11 +84,13 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                 style={{ borderColor }}
             >
                 {/* Linke Spalte */}
-                <div className="flex-1 min-w-0 p-2 flex flex-col gap-1 break-words hyphens-auto" lang="de">
-                    {expanded ? children : (
-                        <span className="truncate overflow-hidden whitespace-nowrap font-medium w-full block">
+                <div className="flex-1 min-w-0 p-2 flex flex-col gap-1">
+                    {expanded ? (
+                        <SmartText>{children}</SmartText>
+                    ) : (
+                        <SmartText className="truncate font-medium w-full block">
                             {title}
-                        </span>
+                        </SmartText>
                     )}
                 </div>
 

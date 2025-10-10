@@ -6,11 +6,11 @@ import {
   verticalListSortingStrategy,
   arrayMove,
 } from "@dnd-kit/sortable";
-import type { Task } from "@/task/Task";
+import type { Task } from "@/features/task/Task";
 import SortableTaskCard from "./SortableTaskCard";
 import TaskCard from "./TaskCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProcessStore } from "@/process/useProcessStore";
+import { useProcessStore } from "@/features/process/store/useProcessStore";
 import Header from "@/components/Header";
 import { useRef } from "react";
 
@@ -30,20 +30,18 @@ const TaskList = ({
   setTasks,
   setDeleteCandidate,
   showReorderButtons,
-  allowEditing = false,
   onMoveTask,
 }: TaskListProps) => {
   const [openMenuTaskId, setOpenMenuTaskId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { processId } = useParams<{ processId: string }>();
+  const listRef = useRef<HTMLDivElement>(null);
 
   // Handler für Navigation
   const handleClickTask = (taskId: string) => {
     const proId = processId || useProcessStore.getState().selectedProcess?.id;
     if (proId) navigate(`/processes/${proId}/task/${taskId}`);
   };
-
-  const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (listRef.current) {
@@ -101,8 +99,8 @@ const TaskList = ({
           <SortableTaskCard
             key={task.id}
             task={task}
-            showReorderButtons
-            allowEditing={allowEditing}
+            showReorderButtons={showReorderButtons}
+            allowEditing={true}
             setDeleteCandidate={setDeleteCandidate}
             menuOpen={openMenuTaskId === task.id}
             setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
@@ -112,7 +110,8 @@ const TaskList = ({
           <TaskCard
             key={task.id}
             task={task}
-            allowEditing={allowEditing}
+            allowEditing={false}
+            showReorderButtons={showReorderButtons}
             setDeleteCandidate={setDeleteCandidate}
             menuOpen={openMenuTaskId === task.id}
             setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
@@ -127,7 +126,7 @@ const TaskList = ({
       <Header title={processName} />
 
       {/* Nur hier geändert: gap-2 statt gap-3 */}
-      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4">
+      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4" >
         {showReorderButtons && (setTasks || onMoveTask) ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext
