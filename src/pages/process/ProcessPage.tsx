@@ -43,7 +43,7 @@ const ProcessPage = () => {
     <>
       <Header
         title={
-          <SmartText variant="h1" className="truncate">
+          <SmartText variant="h2" className="truncate">
             {process.title}
           </SmartText>
         }
@@ -56,32 +56,32 @@ const ProcessPage = () => {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <h2 className="font-semibold">
-              <SmartText variant="h2">Typ</SmartText>
+              <SmartText variant="small">Typ</SmartText>
             </h2>
             <SmartText>{process.type}</SmartText>
           </div>
           <div>
             <h2 className="font-semibold">
-              <SmartText variant="h2">Status</SmartText>
+              <SmartText variant="small">Status</SmartText>
             </h2>
             <SmartText>{process.status}</SmartText>
           </div>
           <div>
             <h2 className="font-semibold">
-              <SmartText variant="h2">Ersteller</SmartText>
+              <SmartText variant="small">Ersteller</SmartText>
             </h2>
             <SmartText>{process.creator}</SmartText>
           </div>
           <div>
             <h2 className="font-semibold">
-              <SmartText variant="h2">Erstellt am</SmartText>
+              <SmartText variant="small">Erstellt am</SmartText>
             </h2>
             <SmartText>{process.createdAt.toLocaleDateString("de-DE")}</SmartText>
           </div>
           {process.dueDate && (
             <div>
               <h2 className="font-semibold">
-                <SmartText variant="h2">Fällig am</SmartText>
+                <SmartText variant="small">Fällig am</SmartText>
               </h2>
               <SmartText>{process.dueDate.toLocaleDateString("de-DE")}</SmartText>
             </div>
@@ -89,7 +89,7 @@ const ProcessPage = () => {
           {process.completedAt && (
             <div>
               <h2 className="font-semibold">
-                <SmartText variant="h2">Abgeschlossen am</SmartText>
+                <SmartText variant="small">Abgeschlossen am</SmartText>
               </h2>
               <SmartText>{process.completedAt.toLocaleDateString("de-DE")}</SmartText>
             </div>
@@ -98,7 +98,7 @@ const ProcessPage = () => {
 
         <div>
           <h2 className="font-semibold">
-            <SmartText variant="h2">Industrien</SmartText>
+            <SmartText variant="small">Industrien</SmartText>
           </h2>
           <ul className="list-disc pl-6">
             {process.industries.map((ind) => (
@@ -111,7 +111,7 @@ const ProcessPage = () => {
 
         <div>
           <h2 className="font-semibold">
-            <SmartText variant="h2">Tasks</SmartText>
+            <SmartText variant="small">Tasks</SmartText>
           </h2>
           <ul className="list-disc pl-6">
             {tasks.length > 0 ? (
@@ -130,7 +130,7 @@ const ProcessPage = () => {
 
         <div>
           <h2 className="font-semibold">
-            <SmartText variant="h2">History</SmartText>
+            <SmartText variant="small">History</SmartText>
           </h2>
           <ul className="list-disc pl-6">
             {process.history.map((h, i) => (
@@ -146,7 +146,7 @@ const ProcessPage = () => {
         {process.metadata && (
           <div>
             <h2 className="font-semibold">
-              <SmartText variant="h2">Metadata</SmartText>
+              <SmartText variant="small">Metadata</SmartText>
             </h2>
             <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto">
               <SmartText>{JSON.stringify(process.metadata, null, 2)}</SmartText>

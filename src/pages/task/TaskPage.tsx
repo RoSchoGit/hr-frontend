@@ -24,7 +24,7 @@ const TaskPage = () => {
       <Header
         title={
           processName ? (
-            <SmartText variant="h1" className="truncate">
+            <SmartText variant="small" className="truncate">
               {processName}
             </SmartText>
           ) : undefined

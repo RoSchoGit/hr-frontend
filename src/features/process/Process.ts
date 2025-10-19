@@ -50,6 +50,7 @@ export interface ProcessHistoryEntry {
 // Haupt-Prozessinterface
 export interface Process {
   id: string;
+  clientId: string;
   type: ProcessType;
   title: string;
   description?: string;
@@ -67,6 +68,7 @@ export interface Process {
 // Implementierung
 export class ProcessImpl implements Process {
   id: string;
+  clientId: string;
   type: ProcessType;
   title: string;
   description?: string;
@@ -82,6 +84,7 @@ export class ProcessImpl implements Process {
 
   constructor(
     id: string,
+    clientId: string,
     type: ProcessType,
     title: string,
     creator: string,
@@ -91,6 +94,7 @@ export class ProcessImpl implements Process {
     dueDate?: Date 
   ) {
     this.id = id;
+    this.clientId = clientId;
     this.type = type;
     this.title = title;
     this.description = description;
