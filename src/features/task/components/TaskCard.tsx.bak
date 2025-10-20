@@ -94,7 +94,7 @@ export class TaskCard extends Component<TaskCardProps, TaskCardState> {
       >
         {/* Linke Spalte (kommt als children rein) */}
         <div className="flex flex-wrap items-center gap-2">
-          <p className="text-xs text-text-muted whitespace-nowrap">{task.type}</p>
+          <p className="text-xs text-gray-500 whitespace-nowrap">{task.type}</p>
           <div className="flex flex-wrap gap-2">
             {task.dueDate && (
               <div

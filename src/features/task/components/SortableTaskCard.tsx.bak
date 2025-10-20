@@ -57,7 +57,7 @@ const SortableTaskCard = ({
               {...attributes} // nur am Handle!
               {...listeners}  // nur am Handle!
               onClick={(e) => e.stopPropagation()} // verhindert Navigation beim Handle-Klick
-              className="p-1 hover:text-text cursor-grab"
+              className="p-1 hover:text-gray-700 cursor-grab"
               aria-label="Aufgabe verschieben"
             >
               <GripVertical size={16} />

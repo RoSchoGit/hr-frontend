@@ -123,7 +123,7 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                     <button
                         type="button"
                         onClick={this.toggleExpand}
-                        className="p-0.5 rounded hover:bg-surface transition-colors"
+                        className="p-0.5 rounded hover:bg-gray-100 transition-colors"
                         aria-label={expanded ? "Einklappen" : "Aufklappen"}
                     >
                         {expanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
@@ -144,7 +144,7 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                                             e.preventDefault();
                                             setMenuOpen?.(!menuOpen);
                                         }}
-                                        className="p-0.5 rounded hover:bg-surface transition-colors"
+                                        className="p-0.5 rounded hover:bg-gray-100 transition-colors"
                                         aria-label="Mehr Optionen"
                                     >
                                         <MoreVertical size={16} />
@@ -157,7 +157,7 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                                             {onEdit && (
                                                 <button
                                                     onClick={onEdit}
-                                                    className="flex items-center w-full px-2 py-1 hover:bg-surface text-blue-600 transition-colors"
+                                                    className="flex items-center w-full px-2 py-1 hover:bg-gray-100 text-blue-600 transition-colors"
                                                 >
                                                     <Pencil size={14} className="mr-1" /> Bearbeiten
                                                 </button>
@@ -165,7 +165,7 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                                             {onDelete && (
                                                 <button
                                                     onClick={onDelete}
-                                                    className="flex items-center w-full px-2 py-1 hover:bg-surface text-red-600 transition-colors"
+                                                    className="flex items-center w-full px-2 py-1 hover:bg-gray-100 text-red-600 transition-colors"
                                                 >
                                                     <Trash size={14} className="mr-1" /> Löschen
                                                 </button>
@@ -173,7 +173,7 @@ export class BaseCard extends Component<BaseCardProps, BaseCardState> {
                                             {onInfo && (
                                                 <button
                                                     onClick={onInfo}
-                                                    className="flex items-center w-full px-2 py-1 hover:bg-surface text-gray-800 transition-colors"
+                                                    className="flex items-center w-full px-2 py-1 hover:bg-gray-100 text-gray-800 transition-colors"
                                                 >
                                                     <Info size={14} className="mr-1" /> Info
                                                 </button>

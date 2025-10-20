@@ -22,7 +22,7 @@ const ProcessListPage = () => {
 
   useEffect(() => {
     loadProcesses();
-  }, [loadProcesses]);
+  }, []); 
 
   // Sortierung: ARCHIVED → DONE → OPEN → IN_PROGRESS
   const sortedProcesses = useMemo(() => {

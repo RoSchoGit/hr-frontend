@@ -31,8 +31,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
   loadProcesses: async () => {
     try {
       const processes = await fetchProcesses();
-
-      const parsedProcesses = processes.map(p => ({
+      const parsed = processes.map(p => ({
         ...p,
         tasks: p.tasks ?? [],
         industries: p.industries ?? [],
@@ -41,8 +40,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
         dueDate: p.dueDate ? new Date(p.dueDate) : undefined,
         completedAt: p.completedAt ? new Date(p.completedAt) : undefined,
       }));
-
-      set({ processes: parsedProcesses });
+      set({ processes: parsed });
     } catch (err) {
       console.error("Fehler beim Laden der Processes:", err);
     }

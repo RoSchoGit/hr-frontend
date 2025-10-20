@@ -213,7 +213,7 @@ export default function CreateStep2() {
                 <div className="flex flex-col gap-3">
                     <h4 className="font-semibold">Zusätzliche Felder</h4>
                     {newTask.metadata.map((field) => (
-                        <div key={field.id} className="flex flex-col gap-1 border p-2 rounded bg-background">
+                        <div key={field.id} className="flex flex-col gap-1 border p-2 rounded bg-gray-50">
                             {/* Label + Typ nebeneinander */}
                             <div className="flex items-center gap-2">
                                 <input
@@ -228,7 +228,7 @@ export default function CreateStep2() {
                                 <DropdownMenu.Root>
                                     <DropdownMenu.Trigger asChild>
                                         <button
-                                            className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-surface"
+                                            className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100"
                                         >
                                             {field.type === "text" && <TextIcon className="w-4 h-4" />}
                                             {field.type === "number" && <Tally5Icon className="w-4 h-4" />}
@@ -237,24 +237,24 @@ export default function CreateStep2() {
                                     </DropdownMenu.Trigger>
 
                                     <DropdownMenu.Content
-                                        className="bg-white border border-border rounded shadow-md p-1"
+                                        className="bg-white border border-gray-200 rounded shadow-md p-1"
                                         sideOffset={4}
                                     >
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "text")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
                                         >
                                             <TextIcon className="w-4 h-4" /> Text
                                         </DropdownMenu.Item>
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "number")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
                                         >
                                             <Tally5Icon className="w-4 h-4" /> Number
                                         </DropdownMenu.Item>
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "date")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
                                         >
                                             <CalendarIcon className="w-4 h-4" /> Date
                                         </DropdownMenu.Item>

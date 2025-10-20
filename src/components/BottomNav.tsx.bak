@@ -81,7 +81,7 @@ const BottomNav = () => {
         {showBackButton && (
           <button
             onClick={handleBack}
-            className="text-text hover:text-black"
+            className="text-gray-700 hover:text-black"
           >
             <ArrowLeft className="h-6 w-6" />
           </button>

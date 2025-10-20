@@ -148,7 +148,7 @@ const ProcessPage = () => {
             <h2 className="font-semibold">
               <SmartText variant="small">Metadata</SmartText>
             </h2>
-            <pre className="bg-surface p-2 rounded text-sm overflow-x-auto">
+            <pre className="bg-gray-100 p-2 rounded text-sm overflow-x-auto">
               <SmartText>{JSON.stringify(process.metadata, null, 2)}</SmartText>
             </pre>
           </div>

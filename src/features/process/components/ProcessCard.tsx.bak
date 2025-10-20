@@ -79,7 +79,7 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
       >
         <div className="flex flex-wrap items-center gap-2">
           {process.type && (
-            <p className="text-xs text-text-muted whitespace-nowrap">{process.type}</p>
+            <p className="text-xs text-gray-500 whitespace-nowrap">{process.type}</p>
           )}
           <div className="flex flex-wrap gap-2">
             {dueDateToShow && (
