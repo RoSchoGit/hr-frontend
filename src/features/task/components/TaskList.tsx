@@ -11,11 +11,9 @@ import SortableTaskCard from "./SortableTaskCard";
 import TaskCard from "./TaskCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useProcessStore } from "@/features/process/store/useProcessStore";
-import Header from "@/components/Header";
 import { useRef } from "react";
 
 type TaskListProps = {
-  processName: string;
   tasks: Task[];
   setTasks?: React.Dispatch<React.SetStateAction<Task[]>>;
   setDeleteCandidate?: (task: Task) => void;
@@ -25,7 +23,6 @@ type TaskListProps = {
 };
 
 const TaskList = ({
-  processName,
   tasks,
   setTasks,
   setDeleteCandidate,
@@ -78,7 +75,6 @@ const TaskList = ({
   if (tasks.length === 0) {
     return (
       <>
-        <Header title={processName} />
         <div className="p-4 sm:p-6">
           <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 sm:p-6 text-center shadow-sm">
             <h3 className="font-semibold text-lg mb-2">Keine Tasks vorhanden</h3>
@@ -123,8 +119,6 @@ const TaskList = ({
 
   return (
     <>
-      <Header title={processName} />
-
       {/* Nur hier geändert: gap-2 statt gap-3 */}
       <div className="flex flex-col gap-2 py-2 px-2 sm:px-4" >
         {showReorderButtons && (setTasks || onMoveTask) ? (

@@ -62,7 +62,6 @@ const ProcessListPage = () => {
         <Loader loading={true} size={36} message="Prozesse werden geladen…" />
       </div>
     )
-
   }
 
   return (

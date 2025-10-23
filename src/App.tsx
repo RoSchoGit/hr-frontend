@@ -15,6 +15,7 @@ import ProcessEditPage from './pages/process/ProcessEditPage';
 import ProcessPage from './pages/process/ProcessPage';
 import { Navigate } from 'react-router-dom';
 import { KeycloakProvider } from './keycloak/KeycloakProvider';
+import ProcessLayout from './pages/process/ProcessLayout';
 
 function App() {
   return (
@@ -30,10 +31,14 @@ function App() {
 
           <Route path="/processes" element={<AppLayout />}>
             <Route index element={<ProcessListPage />} />
-            <Route path=":processId" element={<ProcessPage />} />
-            <Route path=":processId/edit" element={<ProcessEditPage />} />
-            <Route path=":processId/tasks" element={<TaskListPage />} />
-            <Route path=":processId/task/:taskId" element={<TaskPage />} />
+
+            {/* Layout für alle Prozess-bezogenen Seiten */}
+            <Route path=":processId" element={<ProcessLayout />}>
+              <Route index element={<ProcessPage />} />
+              <Route path="edit" element={<ProcessEditPage />} />
+              <Route path="tasks" element={<TaskListPage />} />
+              <Route path="task/:taskId" element={<TaskPage />} />
+            </Route>
 
             <Route path="create" element={<CreateProcessLayout />}>
               <Route path="step-1" element={<CreateStep1 />} />

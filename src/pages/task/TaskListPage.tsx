@@ -1,26 +1,25 @@
 // src/task/TaskListPage.tsx
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
 import { useTaskStore } from "@/features/task/store/useTaskStore";
 import { useProcessStore } from "@/features/process/store/useProcessStore";
 import TaskList from "@/features/task/components/TaskList";
 import EmptyState from "@/components/EmptyState";
+import { useOutletContext } from "react-router-dom";
+import type { ProcessContextType } from "@/pages/process/ProcessLayout";
 
 const TaskListPage = () => {
-  const { processId } = useParams<{ processId: string }>();
-  const { processes, loadProcesses } = useProcessStore();
+  const { loadProcesses } = useProcessStore();
   const { loadTasksForProcess, getTasksForProcess, deleteCandidate, deleteSelectedTask, setDeleteCandidate } = useTaskStore();
+  const { process } = useOutletContext<ProcessContextType>();
 
   // Minimal: immer neu laden (kein Check)
   useEffect(() => {
-    loadProcesses();
-    if (processId) {
-      loadTasksForProcess(processId);
+    if (process?.id) {
+      loadTasksForProcess(process.id);
     }
-  }, [processId, loadProcesses, loadTasksForProcess]);
+  }, [loadProcesses, loadTasksForProcess]);
 
-  const tasks = getTasksForProcess(processId);
-  const process = processes.find((p) => p.id === processId);
+  const tasks = getTasksForProcess(process?.id);
 
   if (!process) {
     return (
@@ -34,7 +33,6 @@ const TaskListPage = () => {
   return (
     <>
       <TaskList
-        processName={process.title}
         tasks={tasks}
         showReorderButtons={false}
         setDeleteCandidate={setDeleteCandidate}

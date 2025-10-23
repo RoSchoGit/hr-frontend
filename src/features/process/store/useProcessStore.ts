@@ -17,6 +17,7 @@ type ProcessStore = {
   addProcess: (process: Process) => void;
   updateProcess: (process: Process) => void;
   createNewProcess: (title: string, description: string, type: ProcessType) => Process;
+  getProcessById: (id: string) => Process | null;
 };
 
 export const useProcessStore = create<ProcessStore>((set, get) => ({
@@ -102,6 +103,10 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
     }));
   },
 
+  getProcessById: (id: string) => {
+    return get().processes.find((p) => p.id === id) ?? null;
+  }
+  
 }));
 
 export default useProcessStore;

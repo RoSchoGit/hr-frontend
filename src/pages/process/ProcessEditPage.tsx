@@ -1,15 +1,12 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
 import { useProcessStore } from "@/features/process/store/useProcessStore";
 import type { Process } from "../../features/process/Process";
+import { useOutletContext } from "react-router-dom";
+import type { ProcessContextType } from "@/pages/process/ProcessLayout";
 
 const ProcessEditPage = () => {
-    const { processId } = useParams<{ processId: string }>();
-    const { processes, updateProcess } = useProcessStore();
-    const navigate = useNavigate();
-
-    const process = processes.find(p => p.id === processId);
-
+    const { updateProcess } = useProcessStore();
+    const { process } = useOutletContext<ProcessContextType>();
     const [form, setForm] = useState(process ? { ...process } : null);
 
     if (!process || !form) return <div>Prozess nicht gefunden</div>;
