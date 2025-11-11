@@ -9,7 +9,7 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({ title }) => {
   const hasTitle =
     title !== undefined &&
-    title !== null &&
+    title !== null &&   
     !(typeof title === "string" && title.trim() === "");
 
   const tooltip = typeof title === "string" ? title : undefined;
@@ -45,7 +45,7 @@ const Header: FC<HeaderProps> = ({ title }) => {
             variant="h2"
             className="font-sans font-semibold text-gray-800 tracking-wide text-center leading-tight text-lg md:text-xl"
           >
-            Oh, da ist was mit dem Titel schief gelaufen
+            Oh, noch kein Titel?
           </SmartText>
         </div>
       )}

@@ -1,7 +1,16 @@
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useProcessStore } from "@/features/process/store/useProcessStore";
-import { ProcessType } from "@/features/process/Process";
+// CreateStep1.tsx
+import { useEffect, useState } from "react";
+import { useNavigate, useOutletContext } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
+import type { Process } from "@/features/process/Process";
+import { ProcessStatus, ProcessType } from "@/features/process/Process";
+
+type OutletCtx = {
+  draftProcess: Process | null;
+  setDraftProcess: React.Dispatch<React.SetStateAction<Process | null>>;
+  tasks: any[];
+  setTasks: (t: any[]) => void;
+};
 
 const processTemplates = [
   { id: "p1", name: "Onboarding neuer Mitarbeiter", type: ProcessType.ONBOARDING },
@@ -10,15 +19,66 @@ const processTemplates = [
 
 export default function CreateStep1() {
   const navigate = useNavigate();
-  const createNewProcess = useProcessStore((state) => state.createNewProcess);
+  const { draftProcess, setDraftProcess } = useOutletContext<OutletCtx>();
 
-  const [processName, setProcessName] = useState("");
-  const [description, setDescription] = useState("");
-  const [type, setType] = useState<ProcessType>(ProcessType.ONBOARDING);
+  // lokale Inputs initialisiert aus draft (falls vorhanden)
+  const [title, setTitle] = useState<string>(draftProcess?.title ?? "");
+  const [description, setDescription] = useState<string>(draftProcess?.description ?? "");
+  const [type, setType] = useState<ProcessType>((draftProcess?.type as ProcessType) ?? ProcessType.ONBOARDING);
+
+  // Sync: wenn draftProcess von außen gesetzt/verändert wird, inputs updaten
+  useEffect(() => {
+    setTitle(draftProcess?.title ?? "");
+    setDescription(draftProcess?.description ?? "");
+    setType((draftProcess?.type as ProcessType) ?? ProcessType.ONBOARDING);
+  }, [draftProcess]);
+
+  // helper: update draftProcess in context (keine Löschlogik, nur set/update)
+  const updateDraft = (patch: Partial<Process>) => {
+    setDraftProcess((prev) => {
+      const base: Process = prev ?? {
+        id: uuidv4(),
+        title: "",
+        description: "",
+        type: ProcessType.ONBOARDING,
+        status: ProcessStatus.OPEN,
+        tasks: [],
+        industries: [],
+        history: [],
+        createdAt: new Date(),
+        creator: "currentUser",
+      };
+      return { ...base, ...patch };
+    });
+  };
+
+  // wenn Nutzer tippt: update lokal + Context sofort (Header live)
+  const onTitleChange = (v: string) => {
+    setTitle(v);
+    updateDraft({ title: v });
+  };
+
+  const onDescriptionChange = (v: string) => {
+    setDescription(v);
+    updateDraft({ description: v });
+  };
+
+  const onTypeChange = (t: ProcessType) => {
+    setType(t);
+    updateDraft({ type: t });
+  };
 
   const handleNext = () => {
-    if (!processName.trim()) return;
-    createNewProcess(processName, description, type);
+    if (!title.trim()) return;
+
+    // Stelle sicher, dass draftProcess existiert und die aktuellen Werte enthält
+    updateDraft({
+      title,
+      description,
+      type,
+    });
+
+    // navigate to step-2 (draft ist jetzt im Context)
     navigate("/processes/create/step-2");
   };
 
@@ -28,23 +88,23 @@ export default function CreateStep1() {
       <input
         type="text"
         placeholder="Prozessname"
-        value={processName}
-        onChange={(e) => setProcessName(e.target.value)}
+        value={title}
+        onChange={(e) => onTitleChange(e.target.value)}
         className="border border-gray-300 rounded px-3 py-2 w-full"
       />
 
-      <label className="font-medium">Beschreibung</label>
+      <label className="font-medium mt-2">Beschreibung</label>
       <textarea
         placeholder="Beschreibung"
         value={description}
-        onChange={(e) => setDescription(e.target.value)}
+        onChange={(e) => onDescriptionChange(e.target.value)}
         className="border border-gray-300 rounded px-3 py-2 w-full"
       />
 
-      <label className="font-medium">Prozesstyp</label>
+      <label className="font-medium mt-2">Prozesstyp</label>
       <select
         value={type}
-        onChange={(e) => setType(e.target.value as ProcessType)}
+        onChange={(e) => onTypeChange(e.target.value as ProcessType)}
         className="border border-gray-300 rounded px-3 py-2 w-full"
       >
         {Object.values(ProcessType).map((pt) => (
@@ -60,8 +120,11 @@ export default function CreateStep1() {
           <button
             key={tpl.id}
             onClick={() => {
-              setProcessName(tpl.name);
-              setType(tpl.type);
+              setTitle(tpl.name);
+              setDescription("");
+              onTypeChange(tpl.type);
+              // update draft also
+              updateDraft({ title: tpl.name, description: "", type: tpl.type });
             }}
             className="px-3 py-2 bg-gray-200 rounded hover:bg-gray-300 text-left w-full"
           >
@@ -72,7 +135,7 @@ export default function CreateStep1() {
 
       <button
         onClick={handleNext}
-        disabled={!processName.trim()}
+        disabled={!title.trim()}
         className="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 w-full"
       >
         Weiter

@@ -4,6 +4,8 @@ export async function authFetch(url: string, options: RequestInit = {}) {
   // Sicherstellen, dass Keycloak initialisiert wurde (oder Init zumindest gestartet ist)
   await initKeycloak();
 
+  console.log(keycloak.token);
+
   // optional: sicherstellen, dass Token vorhanden ist / frisch ist
   try {
     await keycloak.updateToken(30); // erneuert, falls <30s Restlaufzeit

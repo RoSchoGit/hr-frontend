@@ -24,10 +24,6 @@ export interface Attachment {
   uploadedBy: string;
 }
 
-interface Metadata {
-  [key: string]: any;
-}
-
 export interface Task {
   id: string;
   processId: string; // neu: kommt jetzt direkt aus der DB

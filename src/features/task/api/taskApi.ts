@@ -52,3 +52,34 @@ export async function fetchTasksByIds(taskIds: string[]): Promise<Task[]> {
   if (!response.ok) throw new Error("Fehler beim Laden der Tasks nach IDs");
   return response.json();
 }
+
+export async function updateTask(id: string, task: Partial<Task>): Promise<Task> {
+  const response = await authFetch(`${BASE_URL}/${id}`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(task),
+  });
+  if (!response.ok) throw new Error("Fehler beim Aktualisieren des Tasks");
+  return response.json();
+}
+
+export async function createTasksForProcess(processId: string, tasks: Task[]): Promise<Task[]> {
+  const response = await authFetch(`${BASE_URL}/process/${encodeURIComponent(processId)}/tasks`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(tasks),
+  });
+  if (!response.ok) throw new Error("Fehler beim Erstellen neuer Tasks");
+  return response.json() as Promise<Task[]>;
+}
+
+export async function updateTaskPositions(processId: string, positions: { id: string; position: number }[]): Promise<void> {
+  const response = await authFetch(`${BASE_URL}/process/${encodeURIComponent(processId)}/positions`, {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(positions),
+  });
+  if (!response.ok) throw new Error("Fehler beim Aktualisieren der Task-Positionen");
+  return;
+}
+

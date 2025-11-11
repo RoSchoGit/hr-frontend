@@ -1,132 +1,44 @@
-import { Component, createRef } from "react";
-import { DueDateUtils } from "@/utils/DueDateUtils";
-import type { Task } from "../Task";
-import { StatusUtils } from "@/utils/StatusUtils";
+// TaskCard.tsx (nur relevanter Auszug)
+import { Component } from "react";
+import EntityCardContent from "./EntityCardContent";
 import { BaseCard } from "@/components/BaseCard";
+import type { Task } from "../Task";
+import { getCardColors } from "../cardColors";
 
 type TaskCardProps = {
   task: Task;
-  dragHandle?: React.ReactNode;
-  dragHandleProps?: any;
-  setDeleteCandidate?: (task: Task) => void;
-  showReorderButtons?: boolean;
-  allowEditing?: boolean;
+  menuOpen: boolean;
+  setMenuOpen: (open: boolean) => void;
   onEdit?: (task: Task) => void;
   onInfo?: (task: Task) => void;
   onClick?: () => void;
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
+  setDeleteCandidate?: (task: Task) => void;
+  showReorderButtons?: boolean;
+  dragHandle?: React.ReactNode;
+  allowEditing?: boolean;
 };
-
-type TaskCardState = {
-  showDueTooltip: boolean;
-};
-
-export class TaskCard extends Component<TaskCardProps, TaskCardState> {
-  menuRef = createRef<HTMLDivElement>();
-  tooltipTimeout?: NodeJS.Timeout;
-
-  constructor(props: TaskCardProps) {
-    super(props);
-    this.state = { showDueTooltip: false };
-  }
-
-  componentDidMount() {
-    document.addEventListener("click", this.handleOutsideClick);
-  }
-
-  componentWillUnmount() {
-    document.removeEventListener("click", this.handleOutsideClick);
-    if (this.tooltipTimeout) clearTimeout(this.tooltipTimeout);
-  }
-
-  handleOutsideClick = (e: MouseEvent) => {
-    if (!this.menuRef.current?.contains(e.target as Node)) {
-      this.setState({ showDueTooltip: false });
-    }
-  };
-
-  showTooltip = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    this.setState({ showDueTooltip: true }, () => {
-      if (this.tooltipTimeout) clearTimeout(this.tooltipTimeout);
-      this.tooltipTimeout = setTimeout(() => {
-        this.setState({ showDueTooltip: false });
-      }, 1500);
-    });
-  };
-
+export class TaskCard extends Component<any, any> {
   render() {
-    const {
-      task,
-      dragHandle,
-      dragHandleProps,
-      setDeleteCandidate,
-      showReorderButtons,
-      allowEditing,
-      onEdit,
-      onInfo,
-      onClick,
-      menuOpen,
-      setMenuOpen,
-    } = this.props;
-
-    const { showDueTooltip } = this.state;
-    const dueColor = DueDateUtils.dueColors(task.dueDate);
-    const status = StatusUtils.getStatusColor(task.status);
+    const { task, setDeleteCandidate, onEdit, onInfo, onClick, menuOpen, setMenuOpen } = this.props;
 
     return (
       <BaseCard
         title={task.title}
-        borderColor={status.border}
-        dueColor={dueColor?.bg}
-        statusColor={status?.bg}
+        meta={task}
         onClick={onClick}
         onEdit={() => onEdit?.(task)}
         onDelete={() => setDeleteCandidate?.(task)}
         onInfo={() => onInfo?.(task)}
-        showDragHandle={showReorderButtons}
-        dragHandle={dragHandle}
-        dragHandleProps={dragHandleProps}
-        allowEditing={allowEditing}
+        showDragHandle={this.props.showReorderButtons ?? false}
+        dragHandle={this.props.dragHandle ?? false}
+        dragHandleProps={this.props.dragHandleProps ?? {}}
+        allowEditing={this.props.allowEditing ?? false}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
       >
-        {/* Linke Spalte (kommt als children rein) */}
-        <div className="flex flex-wrap items-center gap-2">
-          <p className="text-xs text-text-muted whitespace-nowrap">{task.type}</p>
-          <div className="flex flex-wrap gap-2">
-            {task.dueDate && (
-              <div
-                className="relative text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap"
-                style={{ backgroundColor: dueColor.bg, color: dueColor.text }}
-                onClick={this.showTooltip}
-                onMouseEnter={this.showTooltip}
-              >
-                {DueDateUtils.formattedDate(task.dueDate)}
-                {showDueTooltip && (
-                  <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-gray-800 text-white text-xs rounded px-2 py-1 whitespace-nowrap z-10 shadow-lg">
-                    {DueDateUtils.dueText(task.dueDate)}
-                  </div>
-                )}
-              </div>
-            )}
-            {task.status && (
-              <span
-                className="text-xs px-2 py-0.5 rounded-full font-medium whitespace-nowrap"
-                style={{ backgroundColor: status.bg, color: status.text }}
-              >
-                {task.status.replace("_", " ")}
-              </span>
-            )}
-          </div>
-        </div>
-
-        {/* Titel */}
-        <h3 className="font-semibold text-gray-900">{task.title}</h3>
+        <EntityCardContent entity={task} />
       </BaseCard>
     );
-
   }
 }
 

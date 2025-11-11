@@ -1,32 +1,30 @@
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { TaskImpl, TaskStatus, TaskType } from "@/features/task/Task";
 import type { Attachment } from "@/features/task/Task";
 import TaskList from "@/features/task/components/TaskList";
 import { useTaskStore } from "@/features/task/store/useTaskStore";
-import useProcessStore from "../../../features/process/store/useProcessStore";
-import { metadataTemplates } from "./metadataTemplates";
-import type { MetadataField } from "./metadataTemplates";
-import type { Metadata } from "../../../features/process/Process";
+import useProcessStore from "@/features/process/store/useProcessStore";
+import { metadataTemplates } from "../process/create/metadataTemplates";
+import type { MetadataField } from "../process/create/metadataTemplates";
+import type { Metadata } from "@/features/process/Process";
 import { TextIcon, Tally5Icon, CalendarIcon } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
-import { useEffect, useRef } from "react"; // ⬅️ useRef ergänzt
 
 const assigneeOptions = ["Alice", "Bob", "Charlie"];
 
 type MetadataFieldExtended = MetadataField & { id: string; value?: string };
 
-export default function CreateStep2() {
-    const navigate = useNavigate();
+export default function TaskListEditPage() {
     const process = useProcessStore.getState().selectedProcess;
-    const { addTask: addTaskToStore, moveTask, setDeleteCandidate, getTasksForProcess } = useTaskStore();
-
-    console.log(process);
 
     if (!process) return <div>Kein Prozess gefunden.</div>;
 
-    const tasks = getTasksForProcess(process.id);
+    const addTaskToStore = useTaskStore(s => s.addTask);
+    const moveTask = useTaskStore(s => s.moveTask);
+    const updateTasksForProcess = useTaskStore(s => s.updateTasksForProcess);
+
+    const tasks = useTaskStore(s => s.tasksByProcessId[process.id] ?? []);
 
     const [newTask, setNewTask] = useState({
         title: "",
@@ -39,11 +37,6 @@ export default function CreateStep2() {
     });
 
     const topRef = useRef<HTMLDivElement | null>(null); // ⬅️ Anker oben
-
-    // ⬅️ OnInit: zum Anker scrollen (scrollt den nächstgelegenen Scroll-Container)
-    useEffect(() => {
-        topRef.current?.scrollIntoView({ behavior: "auto", block: "start" });
-    }, []);
 
     const industry = Array.isArray(process.industries) ? process.industries[0] : process.industries;
     const effectiveMetadata: MetadataField[] = metadataTemplates[industry]?.[newTask.type] || [];
@@ -59,6 +52,16 @@ export default function CreateStep2() {
             );
             return { ...prev, metadata: updated };
         });
+    };
+
+    const handleSave = async () => {
+        if (!process) return;
+        try {
+            await updateTasksForProcess(process.id);
+        } catch (err) {
+            console.error("Fehler beim Speichern der Tasks:", err);
+            alert("Fehler beim Speichern der Tasks. Siehe Konsole.");
+        }
     };
 
     const addCustomField = () => {
@@ -80,19 +83,18 @@ export default function CreateStep2() {
 
     const addTask = () => {
         if (!newTask.title.trim()) return;
+
         const metadataObject: Metadata = {};
         newTask.metadata.forEach((f) => {
-            // Nutze das Label als Schlüssel
-            if (f.label.trim()) {
+            if (f.label?.trim()) {
                 metadataObject[f.label] = f.value;
             } else {
-                // Falls Label leer, fallback auf key
                 metadataObject[f.key] = f.value;
             }
         });
 
         const task = new TaskImpl(
-            uuidv4(),
+            `temp-${uuidv4()}`,
             process.id,
             newTask.type,
             newTask.title,
@@ -105,8 +107,11 @@ export default function CreateStep2() {
             metadataObject
         );
         task.status = TaskStatus.OPEN;
+
+        // add to store (your store's addTask should also push into newTasks[])
         addTaskToStore(task);
 
+        // reset form
         setNewTask({
             title: "",
             description: "",
@@ -117,8 +122,7 @@ export default function CreateStep2() {
             metadata: [],
         });
 
-        // ⬅️ Nach dem Hinzufügen: zum Anker scrollen (nächster Scroll-Container)
-        // requestAnimationFrame stellt sicher, dass nach dem Re-Render gescrollt wird
+        // scroll to top anchor after render
         requestAnimationFrame(() => {
             topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
@@ -128,16 +132,12 @@ export default function CreateStep2() {
         if (!effectiveMetadata.length) return;
 
         setNewTask(prev => {
-            // Kopie der aktuellen metadata
             const updatedMetadata = [...prev.metadata];
-
             effectiveMetadata.forEach(f => {
-                // Prüfen, ob Feld bereits existiert (über key)
                 if (!updatedMetadata.find(m => m.key === f.key)) {
                     updatedMetadata.push({ ...f, id: f.key, value: "" });
                 }
             });
-
             return { ...prev, metadata: updatedMetadata };
         });
     }, [newTask.type, effectiveMetadata]);
@@ -146,17 +146,11 @@ export default function CreateStep2() {
         <>
             <div ref={topRef} /> {/* ⬅️ unsichtbarer Anker ganz oben */}
             <TaskList
-                processName={process.title}
                 tasks={tasks}
-                setDeleteCandidate={setDeleteCandidate}
-                showReorderButtons
-                allowEditing
                 onMoveTask={(oldIndex, newIndex) => moveTask(process.id, oldIndex, newIndex)}
             />
 
             <div className="flex flex-col gap-3 p-4 sm:p-6">
-
-                {/* Pflichtfelder */}
                 <div className="flex flex-col gap-2 mb-4">
                     <h3 className="font-semibold text-lg mb-2">Neuer Task erstellen</h3>
 
@@ -209,12 +203,10 @@ export default function CreateStep2() {
                     />
                 </div>
 
-                {/* Zusätzliche Felder */}
                 <div className="flex flex-col gap-3">
                     <h4 className="font-semibold">Zusätzliche Felder</h4>
                     {newTask.metadata.map((field) => (
-                        <div key={field.id} className="flex flex-col gap-1 border p-2 rounded bg-gray-50">
-                            {/* Label + Typ nebeneinander */}
+                        <div key={field.id} className="flex flex-col gap-1 border p-2 rounded bg-background">
                             <div className="flex items-center gap-2">
                                 <input
                                     type="text"
@@ -224,37 +216,31 @@ export default function CreateStep2() {
                                     className="flex-1 min-w-0 border border-gray-300 rounded px-3 py-2"
                                 />
 
-                                {/* Icon Dropdown für Typ */}
                                 <DropdownMenu.Root>
                                     <DropdownMenu.Trigger asChild>
-                                        <button
-                                            className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-gray-100"
-                                        >
+                                        <button className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-surface">
                                             {field.type === "text" && <TextIcon className="w-4 h-4" />}
                                             {field.type === "number" && <Tally5Icon className="w-4 h-4" />}
                                             {field.type === "date" && <CalendarIcon className="w-4 h-4" />}
                                         </button>
                                     </DropdownMenu.Trigger>
 
-                                    <DropdownMenu.Content
-                                        className="bg-white border border-gray-200 rounded shadow-md p-1"
-                                        sideOffset={4}
-                                    >
+                                    <DropdownMenu.Content className="bg-white border border-border rounded shadow-md p-1" sideOffset={4}>
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "text")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
                                         >
                                             <TextIcon className="w-4 h-4" /> Text
                                         </DropdownMenu.Item>
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "number")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
                                         >
                                             <Tally5Icon className="w-4 h-4" /> Number
                                         </DropdownMenu.Item>
                                         <DropdownMenu.Item
                                             onSelect={() => handleMetaChange(field.id, "type", "date")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-gray-100 cursor-pointer"
+                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
                                         >
                                             <CalendarIcon className="w-4 h-4" /> Date
                                         </DropdownMenu.Item>
@@ -262,7 +248,6 @@ export default function CreateStep2() {
                                 </DropdownMenu.Root>
                             </div>
 
-                            {/* Wert unten */}
                             <input
                                 type={field.type}
                                 placeholder="Wert eingeben"
@@ -288,16 +273,13 @@ export default function CreateStep2() {
                 >
                     + Task hinzufügen
                 </button>
-
                 <button
-                    onClick={() => navigate("/processes/create/step-3")}
-                    disabled={tasks.length === 0}
-                    className={`px-4 py-2 rounded text-white w-full mt-4 ${tasks.length ? "bg-blue-600 hover:bg-blue-700" : "bg-gray-400 cursor-not-allowed"}`}
+                    onClick={handleSave}
+                    className="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 mt-4 w-full"
                 >
-                    Weiter
+                    Save
                 </button>
             </div >
         </>
     );
-
 }

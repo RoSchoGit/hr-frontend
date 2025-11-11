@@ -11,27 +11,17 @@ export interface ProcessContextType {
 }
 
 export default function ProcessLayout() {
-    const { processId } = useParams<{ processId: string }>();
-    const { selectedProcess, selectProcess, getProcessById } = useProcessStore();
+  const { processId } = useParams<{ processId: string }>();
+  const { selectedProcess, selectProcess, getProcessById } = useProcessStore();
 
-    let process = selectedProcess;
-    if (!process || process.id !== processId) {
-      process = getProcessById(processId!);
-      if (process) selectProcess(process); // optional: Store synchronisieren
-    }
- 
+  let process = selectedProcess;
+  if (!process || process.id !== processId) {
+    process = getProcessById(processId!);
+    if (process) selectProcess(process);
+  }
+
   const header = (
-    <Header
-      title={
-        process?.title ? (
-          <SmartText variant="h2" className="truncate">
-            {process.title}
-          </SmartText>
-        ) : (
-          "Oh, da ist was mit dem Titel schief gelaufen"
-        )
-      }
-    />
+    <Header title={process?.title} />
   );
 
   return (

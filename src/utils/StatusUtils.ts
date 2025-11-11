@@ -6,7 +6,7 @@ export type StatusColors = {
   };
   
   export class StatusUtils {
-    static getStatusColor(status: string): StatusColors {
+    static getStatusColor(status: string ): StatusColors {
       switch (status) {
         case "DONE":
           return { bg: "#d1fae5", text: "#065f46", border: "#10b981" }; // grün

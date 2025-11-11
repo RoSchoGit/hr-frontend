@@ -1,30 +1,19 @@
-import { Outlet, useNavigate, useParams } from "react-router-dom";
-import { useState, useEffect } from "react";
-import { useTaskStore } from "@/features/task/store/useTaskStore";
+// CreateProcessLayout.tsx
+import { Outlet } from "react-router-dom";
+import { useState } from "react";
+import type { Process } from "@/features/process/Process";
+import Header from "@/components/Header";
 
 export default function CreateProcessLayout() {
-    const navigate = useNavigate();
-    const { step } = useParams<{ step?: string }>();
+    const [draftProcess, setDraftProcess] = useState<Process | null>(null);
+    const [tasks, setTasks] = useState<any[]>([]); // Tasks als Array, kann TaskImpl sein
 
-    const [processName, setProcessName] = useState("");
-    const {setTasks } = useTaskStore();
-
-    // Falls man direkt auf /step-2 landet ohne Prozessname, zurück zu Step 1
-    useEffect(() => {
-        if (!processName && step === "step-2") {
-            navigate("/processes/create/step-1");
-        }
-    }, [processName, step, navigate]);
+    const title = draftProcess?.title ?? "Neuer Prozess";
 
     return (
         <div className="max-w-sm mx-auto font-sans">
-            <Outlet
-                context={{
-                    processName,
-                    setProcessName,
-                    setTasks
-                }}
-            />
+            <Header title={title} />
+            <Outlet context={{ draftProcess, setDraftProcess, tasks, setTasks }} />
         </div>
     );
 }

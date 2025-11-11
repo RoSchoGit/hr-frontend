@@ -18,6 +18,7 @@ type ProcessStore = {
   updateProcess: (process: Process) => void;
   createNewProcess: (title: string, description: string, type: ProcessType) => Process;
   getProcessById: (id: string) => Process | null;
+  resetSelectedProcess: () => void;
 };
 
 export const useProcessStore = create<ProcessStore>((set, get) => ({
@@ -28,7 +29,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
   setProcesses: (processes) => set({ processes }),
   selectProcess: (process) => set({ selectedProcess: process }),
   setDeleteCandidate: (process: Process | null) => set({ deleteCandidate: process }),
-
+  resetSelectedProcess: () => set({ selectedProcess: undefined }),
   loadProcesses: async () => {
     try {
       const processes = await fetchProcesses();
@@ -105,8 +106,8 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
 
   getProcessById: (id: string) => {
     return get().processes.find((p) => p.id === id) ?? null;
-  }
-  
+  },
+
 }));
 
 export default useProcessStore;

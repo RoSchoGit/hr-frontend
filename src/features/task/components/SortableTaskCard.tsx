@@ -1,37 +1,32 @@
 import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-import TaskCard from "./TaskCard";
 import { GripVertical } from "lucide-react";
+import { BaseCard } from "@/components/BaseCard";
+import EntityCardContent from "./EntityCardContent";
 import type { Task } from "../Task";
 
-type SortableTaskCardProps = {
+type Props = {
   task: Task;
   setDeleteCandidate?: (task: Task) => void;
-  showReorderButtons?: boolean;
-  allowEditing?: boolean;
   menuOpen: boolean;
   setMenuOpen: (open: boolean) => void;
-  onClick: () => void;
+  onClick: (taskId: string) => void;
+  onEdit: (taskId: string) => void;
+  onInfo: (taskId: string) => void;
 };
 
-const SortableTaskCard = ({
+export default function SortableTaskCard({
   task,
   setDeleteCandidate,
-  showReorderButtons,
-  allowEditing,
   menuOpen,
   setMenuOpen,
   onClick,
-}: SortableTaskCardProps) => {
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: task.id });
+  onEdit,
+  onInfo,
+}: Props) {
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } =
+    useSortable({ id: String(task.id) });
 
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
@@ -40,33 +35,36 @@ const SortableTaskCard = ({
     cursor: isDragging ? "grabbing" : "pointer",
   };
 
+  const dragHandle = (
+    <button
+      type="button"
+      {...attributes}
+      {...listeners}
+      onClick={(e) => e.stopPropagation()}
+      className="p-1 hover:text-text cursor-grab"
+      aria-label="Aufgabe verschieben"
+    >
+      <GripVertical size={16} />
+    </button>
+  );
+
   return (
-    <div ref={setNodeRef} style={style}>
-      <TaskCard
-        task={task}
-        setDeleteCandidate={setDeleteCandidate}
-        showReorderButtons={showReorderButtons}
-        allowEditing={allowEditing}
+    <div ref={setNodeRef} style={style} data-task-id={task.id}>
+      <BaseCard
+        title={task.title}
+        meta={task}
+        onClick={() => onClick?.(task.id)}
+        onEdit={() => onEdit?.(task.id)}
+        onDelete={() => setDeleteCandidate?.(task)}
+        onInfo={() => onInfo?.(task.id)}
+        showDragHandle={true}
+        dragHandle={dragHandle}
+        allowEditing={true}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
-        onClick={onClick} // Navigation bleibt hier ganz normal
-        dragHandle={
-          showReorderButtons ? (
-            <button
-              type="button"
-              {...attributes} // nur am Handle!
-              {...listeners}  // nur am Handle!
-              onClick={(e) => e.stopPropagation()} // verhindert Navigation beim Handle-Klick
-              className="p-1 hover:text-text cursor-grab"
-              aria-label="Aufgabe verschieben"
-            >
-              <GripVertical size={16} />
-            </button>
-          ) : undefined
-        }
-      />
+      >
+        <EntityCardContent entity={task} />
+      </BaseCard>
     </div>
   );
-};
-
-export default SortableTaskCard;
+}

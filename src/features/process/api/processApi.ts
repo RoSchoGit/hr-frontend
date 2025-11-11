@@ -38,4 +38,23 @@ export async function deleteProcess(id: string): Promise<void> {
   if (!response.ok) throw new Error("Fehler beim Löschen des Processes");
 }
 
+export async function updateProcess(id: string, updatedData: Partial<Process>): Promise<Process> {
+  const response = await authFetch(`${BASE_URL}/${id}`, {
+    method: "PATCH", // oder "PATCH", je nachdem, was dein Backend erwartet
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(updatedData),
+  });
+
+  if (!response.ok) {
+    const text = await response.text();
+    console.error("Backend-Fehler:", text);
+    throw new Error("Fehler beim Aktualisieren des Prozesses");
+  }
+
+  return response.json();
+}
+
+
 

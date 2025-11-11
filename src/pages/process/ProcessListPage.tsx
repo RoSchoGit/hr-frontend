@@ -5,6 +5,7 @@ import { useTaskStore } from "@/features/task/store/useTaskStore";
 import { useNavigate } from "react-router-dom";
 import ProcessCard from "@/features/process/components/ProcessCard";
 import Loader from "@/components/Loader";
+import DeleteProcessConfirmModal from "./DeleteProcessConfirmModal";
 
 const ProcessListPage = () => {
   const {
@@ -22,7 +23,7 @@ const ProcessListPage = () => {
 
   useEffect(() => {
     loadProcesses();
-  }, []); 
+  }, []);
 
   // Sortierung: ARCHIVED → DONE → OPEN → IN_PROGRESS
   const sortedProcesses = useMemo(() => {
@@ -41,6 +42,17 @@ const ProcessListPage = () => {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [sortedProcesses.length]);
+
+  // Schließen bei Klick außerhalb
+  useEffect(() => {
+    const closeMenu = () => setOpenMenuId(null);
+    document.addEventListener("click", closeMenu);
+    document.addEventListener("scroll", closeMenu, true);
+    return () => {
+      document.removeEventListener("click", closeMenu);
+      document.removeEventListener("scroll", closeMenu, true);
+    };
+  }, []);
 
   const handleProcessClick = async (process: Process) => {
     await loadTasksForProcess(process.id);
@@ -83,31 +95,7 @@ const ProcessListPage = () => {
           />
         </div>
       ))}
-
-      {deleteCandidate && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white p-6 rounded-lg w-full max-w-xs sm:max-w-md">
-            <h2 className="text-lg font-bold mb-4">Prozess löschen?</h2>
-            <p className="mb-4">
-              Möchtest du <strong>{deleteCandidate.title}</strong> wirklich löschen?
-            </p>
-            <div className="flex flex-col sm:flex-row justify-end gap-2">
-              <button
-                className="px-4 py-2 bg-gray-300 rounded w-full sm:w-auto"
-                onClick={() => setDeleteCandidate(null)}
-              >
-                Abbrechen
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded w-full sm:w-auto"
-                onClick={deleteSelectedProcess}
-              >
-                Löschen
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <DeleteProcessConfirmModal />
     </div>
   );
 };

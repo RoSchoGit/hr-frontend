@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext, closestCenter } from "@dnd-kit/core";
 import {
@@ -10,34 +10,34 @@ import type { Task } from "@/features/task/Task";
 import SortableTaskCard from "./SortableTaskCard";
 import TaskCard from "./TaskCard";
 import { useNavigate, useParams } from "react-router-dom";
-import { useProcessStore } from "@/features/process/store/useProcessStore";
-import { useRef } from "react";
+import { useTaskStore } from "../store/useTaskStore";
+import DeleteTaskConfirmModal from "@/pages/task/DeleteTaskConfirmModal";
 
 type TaskListProps = {
   tasks: Task[];
   setTasks?: React.Dispatch<React.SetStateAction<Task[]>>;
-  setDeleteCandidate?: (task: Task) => void;
-  showReorderButtons?: boolean;
-  allowEditing?: boolean;
-  onMoveTask?: (index: number, direction: number) => void;
+  onMoveTask?: (oldIndex: number, newIndex: number) => void;
 };
 
-const TaskList = ({
-  tasks,
-  setTasks,
-  setDeleteCandidate,
-  showReorderButtons,
-  onMoveTask,
-}: TaskListProps) => {
+const TaskList = ({ tasks = [], setTasks, onMoveTask }: TaskListProps) => {
   const [openMenuTaskId, setOpenMenuTaskId] = useState<string | null>(null);
   const navigate = useNavigate();
   const { processId } = useParams<{ processId: string }>();
   const listRef = useRef<HTMLDivElement>(null);
+  const { setDeleteCandidate } = useTaskStore();
+  const itemIds = tasks.map(t => String(t.id));
 
-  // Handler für Navigation
   const handleClickTask = (taskId: string) => {
-    const proId = processId || useProcessStore.getState().selectedProcess?.id;
-    if (proId) navigate(`/processes/${proId}/task/${taskId}`);
+    if (!processId) return;
+    navigate(`/processes/${processId}/task/${taskId}`);
+  };
+
+  const handleEditTask = (taskId: string) => {
+    console.log("Edit clicked", taskId);
+  };
+
+  const handleInfoTask = (taskId: string) => {
+    console.log("Info clicked", taskId);
   };
 
   useEffect(() => {
@@ -46,7 +46,6 @@ const TaskList = ({
     }
   }, [tasks.length]);
 
-  // Schließen bei Klick außerhalb
   useEffect(() => {
     const closeMenu = () => setOpenMenuTaskId(null);
     document.addEventListener("click", closeMenu);
@@ -57,76 +56,70 @@ const TaskList = ({
     };
   }, []);
 
+  // --- in TaskList.tsx: handleDragEnd ersetzen ---
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     const oldIndex = tasks.findIndex((t) => t.id === active.id);
     const newIndex = tasks.findIndex((t) => t.id === over.id);
+    if (oldIndex === -1 || newIndex === -1) {
+      console.warn("DragEnd: index not found", { active: active.id, over: over.id });
+      return;
+    }
 
     if (setTasks) {
-      setTasks((tasks) => arrayMove(tasks, oldIndex, newIndex));
+      setTasks((current) => arrayMove(current, oldIndex, newIndex));
     } else if (onMoveTask) {
-      const direction = newIndex > oldIndex ? 1 : -1;
-      onMoveTask(oldIndex, direction);
+      // <-- hier: übergebe newIndex (nicht direction)
+      onMoveTask(oldIndex, newIndex);
     }
   };
 
-  if (tasks.length === 0) {
+  if (!tasks.length) {
     return (
-      <>
-        <div className="p-4 sm:p-6">
-          <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 sm:p-6 text-center shadow-sm">
-            <h3 className="font-semibold text-lg mb-2">Keine Tasks vorhanden</h3>
-            <p className="text-sm sm:text-base">
-              Leider existieren noch keine Tasks für diesen Prozess.
-              Füge über das Formular unten neue Tasks hinzu.
-            </p>
-          </div>
+      <div className="p-4 sm:p-6">
+        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 sm:p-6 text-center shadow-sm">
+          <h3 className="font-semibold text-lg mb-2">Keine Tasks vorhanden</h3>
+          <p className="text-sm sm:text-base">
+            Leider existieren noch keine Tasks für diesen Prozess.
+            Füge über das Formular unten neue Tasks hinzu.
+          </p>
         </div>
-      </>
+      </div>
     );
   }
 
   const renderTaskCards = () =>
-    tasks.map((task) => (
-      <div key={task.id} className="w-full">
-        {showReorderButtons && (setTasks || onMoveTask) ? (
-          <SortableTaskCard
-            key={task.id}
-            task={task}
-            showReorderButtons={showReorderButtons}
-            allowEditing={true}
-            setDeleteCandidate={setDeleteCandidate}
-            menuOpen={openMenuTaskId === task.id}
-            setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
-            onClick={() => handleClickTask(task.id)}
-          />
-        ) : (
-          <TaskCard
-            key={task.id}
-            task={task}
-            allowEditing={false}
-            showReorderButtons={showReorderButtons}
-            setDeleteCandidate={setDeleteCandidate}
-            menuOpen={openMenuTaskId === task.id}
-            setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
-            onClick={() => handleClickTask(task.id)}
-          />
-        )}
-      </div>
-    ));
+    tasks.map((task) =>
+      (setTasks || onMoveTask) ? (
+        <SortableTaskCard
+          key={task.id}
+          task={task}
+          setDeleteCandidate={setDeleteCandidate}
+          menuOpen={openMenuTaskId === task.id}
+          setMenuOpen={(open) => setOpenMenuTaskId(open ? task.id : null)}
+          onClick={() => handleClickTask(task.id)}
+          onEdit={() => handleEditTask(task.id)}
+          onInfo={() => handleInfoTask(task.id)}
+        />
+      ) : (
+        <TaskCard
+          key={task.id}
+          task={task}
+          menuOpen={openMenuTaskId === task.id}
+          setMenuOpen={(open: boolean) => setOpenMenuTaskId(open ? task.id : null)}
+          onClick={() => handleClickTask(task.id)}
+        />
+      )
+    );
 
   return (
     <>
-      {/* Nur hier geändert: gap-2 statt gap-3 */}
-      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4" >
-        {showReorderButtons && (setTasks || onMoveTask) ? (
+      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4" ref={listRef}>
+        {(setTasks || onMoveTask) ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
-            <SortableContext
-              items={tasks.map((t) => t.id)}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
               {renderTaskCards()}
             </SortableContext>
           </DndContext>
@@ -134,6 +127,7 @@ const TaskList = ({
           renderTaskCards()
         )}
       </div>
+      <DeleteTaskConfirmModal />
     </>
   );
 };

@@ -17,7 +17,6 @@ const BottomNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { processId, taskId } = useParams();
-
   const pathname = location.pathname;
 
   const showBackButton = pathname !== "/processes";
@@ -41,7 +40,7 @@ const BottomNav = () => {
       useTaskStore.getState().setTasks(tasks);
       useProcessStore.getState().selectProcess(process);
 
-      navigate("/processes/create/step-2");
+      navigate("/processes/" + processId + "/tasks-edit");
     }
   };
 
