@@ -8,42 +8,60 @@ import Loader from "@/components/Loader";
 import DeleteProcessConfirmModal from "./DeleteProcessConfirmModal";
 
 const ProcessListPage = () => {
-  const {
-    processes,
-    deleteCandidate,
-    setDeleteCandidate,
-    loadProcesses,
-    selectProcess,
-    deleteSelectedProcess
-  } = useProcessStore();
+  // gezielte Selektoren (vermeidet neue Objekt-Referenzen bei jedem Render)
+  const processes = useProcessStore((s) => s.processes);
+  const setDeleteCandidate = useProcessStore((s) => s.setDeleteCandidate);
+  const loadProcesses = useProcessStore((s) => s.loadProcesses);
+  const selectProcess = useProcessStore((s) => s.selectProcess);
+  const deleteSelectedProcess = useProcessStore((s) => s.deleteSelectedProcess); // falls benötigt
+  const sortKey = useProcessStore((s) => s.sortKey);
+
   const { loadTasksForProcess } = useTaskStore();
   const navigate = useNavigate();
   const listRef = useRef<HTMLDivElement>(null);
   const [openMenuId, setOpenMenuId] = useState<string | null>(null);
 
+  // lade Prozesse beim Mount
   useEffect(() => {
     loadProcesses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sortierung: ARCHIVED → DONE → OPEN → IN_PROGRESS
   const sortedProcesses = useMemo(() => {
-    const order: Record<Process["status"], number> = {
-      ARCHIVED: 3,
-      DONE: 2,
-      OPEN: 1,
-      IN_PROGRESS: 0
-    };
-    return [...(processes || [])].sort((a, b) => order[a.status] - order[b.status]);
-  }, [processes]);
+    if (!processes) return [];
 
-  // Automatisch nach unten scrollen
+    const key = sortKey;
+
+    return [...processes].sort((a, b) => {
+      switch (key) {
+        case "STATUS": {
+          const order = { ARCHIVED: 3, DONE: 2, OPEN: 1, IN_PROGRESS: 0 };
+          return order[a.status] - order[b.status];
+        }
+        case "DUE_DATE_ASC":
+          return (a.dueDate || "").localeCompare(b.dueDate || "");
+        case "DUE_DATE_DESC":
+          return (b.dueDate || "").localeCompare(a.dueDate || "");
+        case "CREATOR_ASC":
+          return a.creator.localeCompare(b.creator);
+        case "CREATOR_DESC":
+          return b.creator.localeCompare(a.creator);
+        case "CREATED_AT_DESC":
+          return (b.createdAt || "").localeCompare(a.createdAt || "");
+        default:
+          return 0;
+      }
+    });
+  }, [processes, sortKey]);
+
+  // scroll to bottom wenn sich Anzahl ändert
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
   }, [sortedProcesses.length]);
 
-  // Schließen bei Klick außerhalb
+  // Schließen bei Klick außerhalb / Scroll
   useEffect(() => {
     const closeMenu = () => setOpenMenuId(null);
     document.addEventListener("click", closeMenu);
@@ -68,12 +86,12 @@ const ProcessListPage = () => {
     navigate(`/processes/${process.id}`);
   };
 
-  if (!sortedProcesses || sortedProcesses.length == 0) {
+  if (!sortedProcesses || sortedProcesses.length === 0) {
     return (
       <div style={{ minHeight: 200, display: "flex", alignItems: "center", justifyContent: "center" }}>
         <Loader loading={true} size={36} message="Prozesse werden geladen…" />
       </div>
-    )
+    );
   }
 
   return (

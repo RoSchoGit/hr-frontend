@@ -1,9 +1,9 @@
 import { Outlet, useParams } from "react-router-dom";
 import Header from "@/components/Header";
-import SmartText from "@/components/SmartText";
 import type { ReactNode } from "react";
 import type { Process } from "@/features/process/Process";
 import useProcessStore from "@/features/process/store/useProcessStore";
+import { useEffect } from "react";
 
 export interface ProcessContextType {
   header: ReactNode;
@@ -14,11 +14,16 @@ export default function ProcessLayout() {
   const { processId } = useParams<{ processId: string }>();
   const { selectedProcess, selectProcess, getProcessById } = useProcessStore();
 
-  let process = selectedProcess;
-  if (!process || process.id !== processId) {
-    process = getProcessById(processId!);
-    if (process) selectProcess(process);
-  }
+  const process =
+    selectedProcess?.id === processId
+      ? selectedProcess
+      : getProcessById(processId!);
+
+  useEffect(() => {
+    if (process && selectedProcess?.id !== process.id) {
+      selectProcess(process);
+    }
+  }, [process, selectedProcess, selectProcess]);
 
   const header = (
     <Header title={process?.title} />

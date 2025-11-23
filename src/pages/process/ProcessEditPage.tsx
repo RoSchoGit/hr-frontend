@@ -1,26 +1,41 @@
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useProcessStore } from "@/features/process/store/useProcessStore";
-import type { Process } from "../../features/process/Process";
+import type { Process } from "@/features/process/Process"; // passe Pfad an
 import { useOutletContext } from "react-router-dom";
 import type { ProcessContextType } from "@/pages/process/ProcessLayout";
+import DateTimeInput from "@/components/DateTimeInput";
 
 const ProcessEditPage = () => {
     const { updateProcess } = useProcessStore();
     const { process } = useOutletContext<ProcessContextType>();
-    const [form, setForm] = useState(process ? { ...process } : null);
+    // wichtig: dueDate ist jetzt string | undefined | null (LocalDate or LocalDateTime string)
+    const [form, setForm] = useState<Process | null>(process ? { ...process } : null);
+
+    useEffect(() => {
+        if (process) setForm({ ...process });
+        else setForm(null);
+    }, [process]);
 
     if (!process || !form) return <div>Prozess nicht gefunden</div>;
 
     const handleChange = (key: keyof Process, value: any) => {
-        setForm(prev => {
+        setForm((prev) => {
             if (!prev) return prev;
             return { ...prev, [key]: value };
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (form) updateProcess(form);
+        if (!form) return;
+        try {
+            console.log("sending payload.dueDate =", form.dueDate);
+            await updateProcess(form);
+            // optional: toast / navigate
+        } catch (err) {
+            console.error("Save failed", err);
+            alert("Fehler beim Speichern des Prozesses. Siehe Konsole.");
+        }
     };
 
     return (
@@ -45,23 +60,25 @@ const ProcessEditPage = () => {
             </div>
 
             <div>
-                <label className="block font-semibold">Fällig am</label>
-                <input
-                    type="date"
-                    value={form.dueDate ? new Date(form.dueDate).toISOString().substring(0, 10) : ""}
-                    onChange={(e) => handleChange("dueDate", e.target.value ? new Date(e.target.value) : undefined)}
-                    className="border rounded p-2"
+                {/* Verwende DateTimeInput; mode kann "date" oder "datetime-local" sein */}
+                <DateTimeInput
+                    label="Fällig am (Datum + Uhrzeit)"
+                    mode="datetime-local"
+                    value={form.dueDate ?? undefined}
+                    onChange={(val) => handleChange("dueDate", val ?? null)}
                 />
             </div>
 
-            <button
-                type="submit"
-                className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-            >
-                Speichern
-            </button>
+            <div>
+                <button
+                    type="submit"
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                >
+                    Speichern
+                </button>
+            </div>
         </form>
     );
-}
+};
 
 export default ProcessEditPage;

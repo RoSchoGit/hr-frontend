@@ -21,14 +21,14 @@ const ProcessPage = () => {
         { label: "Typ", value: process.type },
         { label: "Status", value: process.status },
         { label: "Ersteller", value: process.creator },
-        { label: "Erstellt am", value: process.createdAt.toLocaleDateString("de-DE") },
-        ...(process.dueDate ? [{ label: "Fällig am", value: process.dueDate.toLocaleDateString("de-DE") }] : []),
-        ...(process.completedAt ? [{ label: "Abgeschlossen am", value: process.completedAt.toLocaleDateString("de-DE") }] : []),
+        { label: "Erstellt am", value: process.createdAt },
+        ...(process.dueDate ? [{ label: "Fällig am", value: process.dueDate }] : []),
+        ...(process.completedAt ? [{ label: "Abgeschlossen am", value: process.completedAt }] : []),
       ]}
       lists={[
         { title: "Industrien", items: process.industries },
         { title: "Tasks", items: tasks.map((t) => t.title) },
-        { title: "History", items: process.history.map((h) => `[${new Date(h.date).toLocaleString("de-DE")}] ${h.changedBy}: ${h.status}`) },
+        { title: "History", items: [] },
       ]}
       metadata={process.metadata}
     />

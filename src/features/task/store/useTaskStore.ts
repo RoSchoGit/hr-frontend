@@ -118,6 +118,52 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
         return;
       }
 
+      // ---------------------------
+      // NEW: Validate positions are contiguous (either 0-based or 1-based).
+      // Wenn die Reihenfolge nicht lückenlos ist, nur Warnung ausgeben und weitermachen.
+      // ---------------------------
+      const positions = allTasks.map(t => (typeof t.position === "number" ? t.position : NaN));
+      const missingPosition = positions.some(p => Number.isNaN(p));
+      if (missingPosition) {
+        console.warn("updateTasksForProcess: Einige Tasks haben kein gültiges 'position' Feld:", {
+          taskCount: allTasks.length,
+          positions,
+        });
+      } else {
+        const unique = Array.from(new Set(positions)).sort((a, b) => a - b);
+        const n = unique.length;
+        const expected0 = Array.from({ length: n }, (_, i) => i);
+        const expected1 = Array.from({ length: n }, (_, i) => i + 1);
+
+        const matches0 = unique.every((v, i) => v === expected0[i]);
+        const matches1 = unique.every((v, i) => v === expected1[i]);
+
+        if (!matches0 && !matches1) {
+          // Build helpful debug info: missing and duplicate values
+          const min = Math.min(...unique);
+          const max = Math.max(...unique);
+          const missingVals = [];
+          for (let i = min; i <= max; i++) if (!unique.includes(i)) missingVals.push(i);
+          const duplicates = positions.filter((p, idx) => positions.indexOf(p) !== idx);
+
+          console.warn(
+            "updateTasksForProcess: Positions sind nicht lückenlos durchnummeriert (erwarte 0..n-1 oder 1..n). " +
+            "Speichern wird dennoch fortgesetzt. Details:",
+            {
+              taskCount: allTasks.length,
+              uniqueSortedPositions: unique,
+              min,
+              max,
+              missingValuesInRange: missingVals,
+              duplicatePositions: duplicates.length ? Array.from(new Set(duplicates)) : undefined,
+            }
+          );
+        }
+      }
+      // ---------------------------
+      // Ende der neuen Validierung — ab hier bleibt die ursprüngliche Logik unverändert.
+      // ---------------------------
+
       // 1) find new (temp) tasks in the store for this process
       const isTemp = (id?: string) => !!id && id.startsWith("temp-");
       const newTasks = allTasks.filter(t => isTemp(t.id) && t.processId === processId);
@@ -138,7 +184,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
       // 4) update positions for existing tasks
       if (positionsPayload.length) {
-        console.log("positionsPayload: ",positionsPayload);
+        console.log("positionsPayload: ", positionsPayload);
         await updateTaskPositions(processId, positionsPayload);
       }
 
@@ -180,6 +226,7 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
       throw err;
     }
   },
+
 
   addTask: (task) =>
     set((state) => {
@@ -237,8 +284,18 @@ export const useTaskStore = create<TaskStore>((set, get) => ({
 
     const updatedTasks = arrayMove(tasks, oldIndex, newIndex);
 
-    set((state) => ({
-      tasksByProcessId: { ...state.tasksByProcessId, [processId]: updatedTasks },
+    // Reassign positions based on new order (1-based)
+    const rePositioned = updatedTasks.map((t, idx) => ({ ...t, position: idx + 1 }));
+
+    // Update tasksById mapping for these tasks
+    const updatedById = { ...get().tasksById };
+    for (const t of rePositioned) {
+      updatedById[t.id] = t;
+    }
+
+    set(() => ({
+      tasksByProcessId: { ...get().tasksByProcessId, [processId]: rePositioned },
+      tasksById: updatedById,
     }));
   },
 

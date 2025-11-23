@@ -1,6 +1,3 @@
-import type { Task } from "../task/Task";
-
-// Prozessstatus
 export enum ProcessStatus {
   OPEN = "OPEN",
   IN_PROGRESS = "IN_PROGRESS",
@@ -8,7 +5,6 @@ export enum ProcessStatus {
   ARCHIVED = "ARCHIVED"
 }
 
-// Prozessarten (generisch, kann erweitert werden)
 export enum ProcessType {
   NOT_SPECIFIC = "NOT_SPECIFIC",
   ONBOARDING = "ONBOARDING",
@@ -19,7 +15,6 @@ export enum ProcessType {
   PERFORMANCE_REVIEW = "PERFORMANCE_REVIEW"
 }
 
-// Branchen – bewusst generisch & hierarchisch gedacht
 export enum Industry {
   GENERAL_SERVICES = "GENERAL_SERVICES",        // z.B. Reinigung, Callcenter
   HANDWERK = "HANDWERK",                        // z.B. Maler, Elektriker, Friseur
@@ -34,50 +29,44 @@ export enum Industry {
   IT_SERVICES = "IT_SERVICES"                   // z.B. Softwareentwicklung, IT-Support
 }
 
-// Flexible Zusatzinfos
 export interface Metadata {
   [key: string]: string | number | boolean | string[] | number[] | null;
 }
 
-// Prozess-Historie
 export interface ProcessHistoryEntry {
-  date: Date;
+  date: string;
   status: ProcessStatus;
   changedBy: string;
   comment?: string;
 }
 
-// Haupt-Prozessinterface
 export interface Process {
   id: string;
   type: ProcessType;
   title: string;
   description?: string;
   industries: Industry[];
-  tasks: Task[];
   status: ProcessStatus;
   creator: string;
-  createdAt: Date;
-  completedAt?: Date;
-  dueDate?: Date;
-  history: ProcessHistoryEntry[];
+  createdAt: string;
+  completedAt?: string;
+  dueDate?: string;
+ // history?: ProcessHistoryEntry[];
   metadata?: Metadata;
 }
 
-// Implementierung
 export class ProcessImpl implements Process {
   id: string;
   type: ProcessType;
   title: string;
   description?: string;
   industries: Industry[];
-  tasks: Task[];
   status: ProcessStatus;
   creator: string;
-  createdAt: Date;
-  completedAt?: Date;
-  dueDate?: Date;
-  history: ProcessHistoryEntry[];
+  createdAt: string;
+  completedAt?: string;
+  dueDate?: string;
+//  history: ProcessHistoryEntry[];
   metadata?: Metadata;
 
   constructor(
@@ -88,7 +77,7 @@ export class ProcessImpl implements Process {
     industries: Industry[] = [Industry.GENERAL_SERVICES],
     description?: string,
     metadata?: Metadata,
-    dueDate?: Date 
+    dueDate?: string
   ) {
     this.id = id;
     this.type = type;
@@ -97,53 +86,27 @@ export class ProcessImpl implements Process {
     this.creator = creator;
     this.industries = industries;
     this.status = ProcessStatus.OPEN;
-    this.createdAt = new Date();
-    this.tasks = [];
-    this.history = [];
+    this.createdAt = new Date().toISOString().substring(0,19); // "2025-11-23T14:30:00"
+       // this.history = [];
     this.metadata = metadata;
     this.dueDate = dueDate;
-    this.addHistory(ProcessStatus.OPEN, creator, "Process created");
-  }
-
-  addTask(task: Task) {
-    this.tasks.push(task);
-    this.updateStatus();
-  }
-
-  completeTask(taskId: string) {
-    const task = this.tasks.find(t => t.id === taskId);
-    if (task) {
-      task.complete();
-      this.updateStatus();
-    }
+//    this.addHistory(ProcessStatus.OPEN, creator, "Process created");
   }
 
   setStatus(newStatus: ProcessStatus, changedBy: string, comment?: string) {
     this.status = newStatus;
     if (newStatus === ProcessStatus.DONE) {
-      this.completedAt = new Date();
+      this.completedAt = new Date().toISOString().substring(0,19);
     }
-    this.addHistory(newStatus, changedBy, comment);
+//    this.addHistory(newStatus, changedBy, comment);
   }
 
-  private updateStatus() {
-    if (this.tasks.length > 0 && this.tasks.every(t => t.status === "DONE")) {
-      this.status = ProcessStatus.DONE;
-      this.completedAt = new Date();
-      this.addHistory(ProcessStatus.DONE, "SYSTEM", "All tasks completed");
-    } else if (this.tasks.some(t => t.status === "IN_PROGRESS")) {
-      this.status = ProcessStatus.IN_PROGRESS;
-    } else {
-      this.status = ProcessStatus.OPEN;
-    }
-  }
-
-  private addHistory(status: ProcessStatus, changedBy: string, comment?: string) {
-    this.history.push({
-      date: new Date(),
-      status,
-      changedBy,
-      comment
-    });
-  }
+//  private addHistory(status: ProcessStatus, changedBy: string, comment?: string) {
+//    this.history.push({
+//      date: new string(),
+//      status,
+//      changedBy,
+//      comment
+//    });
+//  }
 }

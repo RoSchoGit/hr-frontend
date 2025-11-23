@@ -1,5 +1,3 @@
-// src/api/taskApi.ts
-
 import type { Process } from "@/features/process/Process";
 import { authFetch } from "@/services/authFetch";
 
@@ -39,8 +37,8 @@ export async function deleteProcess(id: string): Promise<void> {
 }
 
 export async function updateProcess(id: string, updatedData: Partial<Process>): Promise<Process> {
-  const response = await authFetch(`${BASE_URL}/${id}`, {
-    method: "PATCH", // oder "PATCH", je nachdem, was dein Backend erwartet
+  const response = await authFetch(`${BASE_URL}/${encodeURIComponent(id)}`, {
+    method: "PUT",
     headers: {
       "Content-Type": "application/json",
     },
@@ -55,6 +53,3 @@ export async function updateProcess(id: string, updatedData: Partial<Process>): 
 
   return response.json();
 }
-
-
-

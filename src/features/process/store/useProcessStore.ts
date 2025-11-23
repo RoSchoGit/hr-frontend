@@ -4,11 +4,23 @@ import { fetchProcesses, deleteProcess } from "@/features/process/api/processApi
 import { createProcess } from "@/features/process/api/processApi";
 import { v4 as uuidv4 } from "uuid";
 import { useTaskStore } from "@/features/task/store/useTaskStore";
+import { updateProcess as apiUpdateProcess } from "@/features/process/api/processApi";
+
+
+export type SortKey =
+  | "STATUS"
+  | "DUE_DATE_ASC"
+  | "DUE_DATE_DESC"
+  | "CREATOR_ASC"
+  | "CREATOR_DESC"
+  | "CREATED_AT_DESC";
 
 type ProcessStore = {
   processes: Process[];
   selectedProcess: Process | null;
   deleteCandidate: Process | null;
+  sortKey: SortKey;
+  setSortKey: (key: SortKey) => void;
   setProcesses: (processes: Process[]) => void;
   selectProcess: (process: Process | null) => void;
   setDeleteCandidate: (process: Process | null) => void;
@@ -25,7 +37,9 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
   processes: [],
   selectedProcess: null,
   deleteCandidate: null,
-
+  sortKey: "STATUS",
+  setSortKey: (key: SortKey) => set({ sortKey: key }),
+  
   setProcesses: (processes) => set({ processes }),
   selectProcess: (process) => set({ selectedProcess: process }),
   setDeleteCandidate: (process: Process | null) => set({ deleteCandidate: process }),
@@ -35,12 +49,12 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
       const processes = await fetchProcesses();
       const parsed = processes.map(p => ({
         ...p,
-        tasks: p.tasks ?? [],
+        //   tasks: p.tasks ?? [],
         industries: p.industries ?? [],
-        history: p.history ?? [],
-        createdAt: new Date(p.createdAt),
-        dueDate: p.dueDate ? new Date(p.dueDate) : undefined,
-        completedAt: p.completedAt ? new Date(p.completedAt) : undefined,
+        //     history: p.history ?? [],
+        createdAt: new Date(p.createdAt).toISOString().substring(0, 19),
+        dueDate: p.dueDate ? new Date(p.dueDate).toISOString().substring(0, 19) : undefined,
+        completedAt: p.completedAt ? new Date(p.completedAt).toISOString().substring(0, 19) : undefined,
       }));
       set({ processes: parsed });
     } catch (err) {
@@ -75,10 +89,10 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
       description,
       type,
       status: ProcessStatus.OPEN,
-      tasks: [],
+      //  tasks: [],
       industries: [],
-      history: [],
-      createdAt: new Date(),
+      //  history: [],
+      createdAt: new Date().toISOString().substring(0, 19),
       creator: "currentUser"
     };
     set({ selectedProcess: process });
@@ -96,12 +110,32 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
     }
   },
 
-  updateProcess: (updatedProcess) => {
-    set((state) => ({
-      processes: state.processes.map(p =>
-        p.id === updatedProcess.id ? updatedProcess : p
-      ),
-    }));
+  updateProcess: async (updatedProcess) => {
+    try {
+      const returned = await apiUpdateProcess(updatedProcess.id, updatedProcess);
+
+      // Keine Date-Objekte mehr — direkt Strings übernehmen
+      const normalized: Process = {
+        ...returned,
+        createdAt: returned.createdAt ?? undefined,
+        dueDate: returned.dueDate ?? undefined,
+        completedAt: returned.completedAt ?? undefined,
+        industries: returned.industries ?? [],
+      };
+
+      // update store
+      set((state) => {
+        const updatedList = state.processes.map(p => (p.id === normalized.id ? normalized : p));
+        const selectedProcess = state.selectedProcess?.id === normalized.id
+          ? normalized
+          : state.selectedProcess;
+
+        return { processes: updatedList, selectedProcess };
+      });
+    } catch (err) {
+      console.error("Fehler beim Persistieren des Prozesses:", err);
+      throw err;
+    }
   },
 
   getProcessById: (id: string) => {
