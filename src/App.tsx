@@ -17,6 +17,7 @@ import { Navigate } from 'react-router-dom';
 import { KeycloakProvider } from './keycloak/KeycloakProvider';
 import ProcessLayout from './pages/process/ProcessLayout';
 import TaskListEditPage from './pages/task/TaskListEditPage';
+import TaskEditPage from './pages/task/TaskEditPage';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
               <Route path="tasks" element={<TaskListPage />} />
               <Route path="tasks-edit" element={<TaskListEditPage />} />
               <Route path="task/:taskId" element={<TaskPage />} />
+              <Route path="task-edit/:taskId" element={<TaskEditPage />} />
             </Route>
 
             <Route path="create" element={<CreateProcessLayout />}>

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useLayoutEffect, useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { TaskImpl, TaskStatus, TaskType } from "@/features/task/Task";
 import type { Attachment } from "@/features/task/Task";
@@ -10,6 +10,9 @@ import type { MetadataField } from "../process/create/metadataTemplates";
 import type { Metadata } from "@/features/process/Process";
 import { TextIcon, Tally5Icon, CalendarIcon } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
+import DateTimeInput from "@/components/DateTimeInput";
+import { parseLocalInputToDate } from "@/utils/date";
+
 
 const assigneeOptions = ["Alice", "Bob", "Charlie"];
 
@@ -53,6 +56,10 @@ export default function TaskListEditPage() {
             return { ...prev, metadata: updated };
         });
     };
+
+    const handleChange = (key: string, value?: Date | undefined) => {
+        setNewTask(prev => ({ ...prev, [key]: value }));
+      };
 
     const handleSave = async () => {
         if (!process) return;
@@ -193,13 +200,13 @@ export default function TaskListEditPage() {
                             <option key={a} value={a}>{a}</option>
                         ))}
                     </select>
-
-                    <label className="font-medium text-sm">Fälligkeitsdatum</label>
-                    <input
-                        type="date"
+                    <DateTimeInput
+                        label="Fällig am (Datum + Uhrzeit)"
+                        mode="datetime-local"
+                        picker="react"               // <-- Wichtig!
                         value={newTask.dueDate}
-                        onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
-                        className="border border-gray-400 rounded px-3 py-2 w-full bg-yellow-50 focus:border-yellow-400 text-sm"
+                        onChange={(val) => handleChange("dueDate", val ? parseLocalInputToDate(val) : undefined)
+                        }
                     />
                 </div>
 

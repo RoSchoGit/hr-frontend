@@ -7,7 +7,7 @@ import EntityCardContent from "@/features/task/components/EntityCardContent";
 type ProcessCardProps = {
   process: Process;
   handleClick: (process: Process) => void;
-  setDeleteCandidate: (process: Process | null) => void;
+  onDelete?: (process: Process) => void;
   onEdit?: (process: Process) => void;
   onInfo?: (process: Process) => void;
   menuOpen?: boolean;
@@ -39,7 +39,7 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
   };
 
   render() {
-    const { process, handleClick, setDeleteCandidate, onEdit, onInfo, menuOpen, setMenuOpen } = this.props;
+    const { process, handleClick, onDelete, onEdit, onInfo, menuOpen, setMenuOpen } = this.props;
 
     return (
       <BaseCard
@@ -47,7 +47,7 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
         meta={process}
         onClick={() => handleClick(process)}
         onEdit={() => onEdit?.(process)}
-        onDelete={() => setDeleteCandidate(process)}
+        onDelete={() => onDelete?.(process)}
         onInfo={() => onInfo?.(process)}
         allowEditing={true}
         menuOpen={menuOpen ?? false}

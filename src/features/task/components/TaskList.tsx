@@ -33,11 +33,11 @@ const TaskList = ({ tasks = [], setTasks, onMoveTask }: TaskListProps) => {
   };
 
   const handleEditTask = (taskId: string) => {
-    console.log("Edit clicked", taskId);
+    navigate(`/processes/${processId}/task-edit/${taskId}`);
   };
 
   const handleInfoTask = (taskId: string) => {
-    console.log("Info clicked", taskId);
+    navigate(`/processes/${processId}/task/${taskId}`);
   };
 
   useEffect(() => {

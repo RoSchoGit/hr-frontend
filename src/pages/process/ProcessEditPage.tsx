@@ -4,6 +4,7 @@ import type { Process } from "@/features/process/Process"; // passe Pfad an
 import { useOutletContext } from "react-router-dom";
 import type { ProcessContextType } from "@/pages/process/ProcessLayout";
 import DateTimeInput from "@/components/DateTimeInput";
+import { parseLocalInputToDate } from "@/utils/date";
 
 const ProcessEditPage = () => {
     const { updateProcess } = useProcessStore();
@@ -60,12 +61,12 @@ const ProcessEditPage = () => {
             </div>
 
             <div>
-                {/* Verwende DateTimeInput; mode kann "date" oder "datetime-local" sein */}
                 <DateTimeInput
                     label="Fällig am (Datum + Uhrzeit)"
                     mode="datetime-local"
-                    value={form.dueDate ?? undefined}
-                    onChange={(val) => handleChange("dueDate", val ?? null)}
+                    picker="react"              
+                    value={form.dueDate}
+                    onChange={(val) => handleChange("dueDate", val ? parseLocalInputToDate(val) : undefined)}
                 />
             </div>
 

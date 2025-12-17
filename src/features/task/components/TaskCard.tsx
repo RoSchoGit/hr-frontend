@@ -1,9 +1,7 @@
-// TaskCard.tsx (nur relevanter Auszug)
 import { Component } from "react";
 import EntityCardContent from "./EntityCardContent";
 import { BaseCard } from "@/components/BaseCard";
 import type { Task } from "../Task";
-import { getCardColors } from "../cardColors";
 
 type TaskCardProps = {
   task: Task;

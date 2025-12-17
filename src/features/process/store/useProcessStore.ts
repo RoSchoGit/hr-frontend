@@ -39,7 +39,7 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
   deleteCandidate: null,
   sortKey: "STATUS",
   setSortKey: (key: SortKey) => set({ sortKey: key }),
-  
+
   setProcesses: (processes) => set({ processes }),
   selectProcess: (process) => set({ selectedProcess: process }),
   setDeleteCandidate: (process: Process | null) => set({ deleteCandidate: process }),
@@ -80,7 +80,6 @@ export const useProcessStore = create<ProcessStore>((set, get) => ({
       console.error("Fehler beim Löschen des Prozesses:", err);
     }
   },
-
 
   createNewProcess: (title, description, type) => {
     const process: Process = {
