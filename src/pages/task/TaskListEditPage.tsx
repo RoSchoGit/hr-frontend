@@ -1,4 +1,4 @@
-import { useLayoutEffect, useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { TaskImpl, TaskStatus, TaskType } from "@/features/task/Task";
 import type { Attachment } from "@/features/task/Task";
@@ -12,7 +12,7 @@ import { TextIcon, Tally5Icon, CalendarIcon } from "lucide-react";
 import * as DropdownMenu from "@radix-ui/react-dropdown-menu";
 import DateTimeInput from "@/components/DateTimeInput";
 import { parseLocalInputToDate } from "@/utils/date";
-
+import "./TaskListEditPage.css";
 
 const assigneeOptions = ["Alice", "Bob", "Charlie"];
 
@@ -20,14 +20,13 @@ type MetadataFieldExtended = MetadataField & { id: string; value?: string };
 
 export default function TaskListEditPage() {
     const process = useProcessStore.getState().selectedProcess;
-
     if (!process) return <div>Kein Prozess gefunden.</div>;
 
-    const addTaskToStore = useTaskStore(s => s.addTask);
-    const moveTask = useTaskStore(s => s.moveTask);
-    const updateTasksForProcess = useTaskStore(s => s.updateTasksForProcess);
+    const addTaskToStore = useTaskStore((s) => s.addTask);
+    const moveTask = useTaskStore((s) => s.moveTask);
+    const updateTasksForProcess = useTaskStore((s) => s.updateTasksForProcess);
 
-    const tasks = useTaskStore(s => s.tasksByProcessId[process.id] ?? []);
+    const tasks = useTaskStore((s) => s.tasksByProcessId[process.id] ?? []);
 
     const [newTask, setNewTask] = useState({
         title: "",
@@ -39,30 +38,33 @@ export default function TaskListEditPage() {
         metadata: [] as MetadataFieldExtended[],
     });
 
-    const topRef = useRef<HTMLDivElement | null>(null); // ⬅️ Anker oben
+    const topRef = useRef<HTMLDivElement | null>(null);
 
-    const industry = Array.isArray(process.industries) ? process.industries[0] : process.industries;
-    const effectiveMetadata: MetadataField[] = metadataTemplates[industry]?.[newTask.type] || [];
+    const industry = Array.isArray(process.industries)
+        ? process.industries[0]
+        : process.industries;
+
+    const effectiveMetadata: MetadataField[] =
+        metadataTemplates[industry]?.[newTask.type] || [];
 
     const handleMetaChange = <K extends keyof MetadataFieldExtended>(
         id: string,
         field: K,
         value: MetadataFieldExtended[K]
     ) => {
-        setNewTask((prev) => {
-            const updated = prev.metadata.map((f) =>
+        setNewTask((prev) => ({
+            ...prev,
+            metadata: prev.metadata.map((f) =>
                 f.id === id ? { ...f, [field]: value } : f
-            );
-            return { ...prev, metadata: updated };
-        });
+            ),
+        }));
     };
 
     const handleChange = (key: string, value?: Date | undefined) => {
-        setNewTask(prev => ({ ...prev, [key]: value }));
-      };
+        setNewTask((prev) => ({ ...prev, [key]: value }));
+    };
 
     const handleSave = async () => {
-        if (!process) return;
         try {
             await updateTasksForProcess(process.id);
         } catch (err) {
@@ -93,11 +95,7 @@ export default function TaskListEditPage() {
 
         const metadataObject: Metadata = {};
         newTask.metadata.forEach((f) => {
-            if (f.label?.trim()) {
-                metadataObject[f.label] = f.value;
-            } else {
-                metadataObject[f.key] = f.value;
-            }
+            metadataObject[f.label?.trim() ? f.label : f.key] = f.value;
         });
 
         const task = new TaskImpl(
@@ -113,12 +111,10 @@ export default function TaskListEditPage() {
             newTask.attachments,
             metadataObject
         );
-        task.status = TaskStatus.OPEN;
 
-        // add to store (your store's addTask should also push into newTasks[])
+        task.status = TaskStatus.OPEN;
         addTaskToStore(task);
 
-        // reset form
         setNewTask({
             title: "",
             description: "",
@@ -129,7 +125,6 @@ export default function TaskListEditPage() {
             metadata: [],
         });
 
-        // scroll to top anchor after render
         requestAnimationFrame(() => {
             topRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
         });
@@ -138,155 +133,180 @@ export default function TaskListEditPage() {
     useEffect(() => {
         if (!effectiveMetadata.length) return;
 
-        setNewTask(prev => {
-            const updatedMetadata = [...prev.metadata];
-            effectiveMetadata.forEach(f => {
-                if (!updatedMetadata.find(m => m.key === f.key)) {
-                    updatedMetadata.push({ ...f, id: f.key, value: "" });
+        setNewTask((prev) => {
+            const updated = [...prev.metadata];
+            effectiveMetadata.forEach((f) => {
+                if (!updated.find((m) => m.key === f.key)) {
+                    updated.push({ ...f, id: f.key, value: "" });
                 }
             });
-            return { ...prev, metadata: updatedMetadata };
+            return { ...prev, metadata: updated };
         });
     }, [newTask.type, effectiveMetadata]);
 
     return (
-        <>
-            <div ref={topRef} /> {/* ⬅️ unsichtbarer Anker ganz oben */}
+        <div className="task-list-edit">
+            <div ref={topRef} />
             <TaskList
                 tasks={tasks}
-                onMoveTask={(oldIndex, newIndex) => moveTask(process.id, oldIndex, newIndex)}
+                onMoveTask={(oldIndex, newIndex) =>
+                    moveTask(process.id, oldIndex, newIndex)
+                }
             />
 
-            <div className="flex flex-col gap-3 p-4 sm:p-6">
-                <div className="flex flex-col gap-2 mb-4">
-                    <h3 className="font-semibold text-lg mb-2">Neuer Task erstellen</h3>
+            <div className="task-list-edit__form">
+                <div className="task-list-edit__section">
+                    <h3 className="task-list-edit__title">Neuer Task erstellen</h3>
 
-                    <label className="font-medium text-sm">Task Titel</label>
+                    <label className="task-list-edit__label">Task Titel</label>
                     <input
-                        type="text"
-                        placeholder="Titel eingeben"
+                        className="task-list-edit__input"
                         value={newTask.title}
-                        onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
-                        className="border border-gray-400 rounded px-3 py-2 w-full bg-yellow-50 focus:border-yellow-400"
+                        onChange={(e) =>
+                            setNewTask({ ...newTask, title: e.target.value })
+                        }
                     />
 
-                    <label className="font-medium text-sm">Beschreibung</label>
+                    <label className="task-list-edit__label">Beschreibung</label>
                     <textarea
-                        placeholder="Beschreibung"
+                        className="task-list-edit__textarea"
                         value={newTask.description}
-                        onChange={(e) => setNewTask({ ...newTask, description: e.target.value })}
-                        className="border border-gray-400 rounded px-3 py-2 w-full bg-yellow-50 focus:border-yellow-400"
+                        onChange={(e) =>
+                            setNewTask({ ...newTask, description: e.target.value })
+                        }
                     />
 
-                    <label className="font-medium text-sm">Typ</label>
+                    <label className="task-list-edit__label">Typ</label>
                     <select
+                        className="task-list-edit__select"
                         value={newTask.type}
-                        onChange={(e) => setNewTask({ ...newTask, type: e.target.value as TaskType })}
-                        className="border border-gray-400 rounded px-3 py-2 w-full bg-yellow-50 focus:border-yellow-400 text-sm"
+                        onChange={(e) =>
+                            setNewTask({ ...newTask, type: e.target.value as TaskType })
+                        }
                     >
                         {Object.values(TaskType).map((tt) => (
-                            <option key={tt} value={tt}>{tt}</option>
+                            <option key={tt} value={tt}>
+                                {tt}
+                            </option>
                         ))}
                     </select>
 
-                    <label className="font-medium text-sm">Assignee</label>
+                    <label className="task-list-edit__label">Assignee</label>
                     <select
+                        className="task-list-edit__select"
                         value={newTask.assignee}
-                        onChange={(e) => setNewTask({ ...newTask, assignee: e.target.value })}
-                        className="border border-gray-400 rounded px-3 py-2 w-full bg-yellow-50 focus:border-yellow-400 text-sm"
+                        onChange={(e) =>
+                            setNewTask({ ...newTask, assignee: e.target.value })
+                        }
                     >
                         <option value="">Unassigned</option>
                         {assigneeOptions.map((a) => (
-                            <option key={a} value={a}>{a}</option>
+                            <option key={a} value={a}>
+                                {a}
+                            </option>
                         ))}
                     </select>
+
                     <DateTimeInput
                         label="Fällig am (Datum + Uhrzeit)"
                         mode="datetime-local"
-                        picker="react"               // <-- Wichtig!
+                        picker="react"
                         value={newTask.dueDate}
-                        onChange={(val) => handleChange("dueDate", val ? parseLocalInputToDate(val) : undefined)
+                        onChange={(val) =>
+                            handleChange(
+                                "dueDate",
+                                val ? parseLocalInputToDate(val) : undefined
+                            )
                         }
                     />
                 </div>
 
-                <div className="flex flex-col gap-3">
-                    <h4 className="font-semibold">Zusätzliche Felder</h4>
-                    {newTask.metadata.map((field) => (
-                        <div key={field.id} className="flex flex-col gap-1 border p-2 rounded bg-background">
-                            <div className="flex items-center gap-2">
+                <div className="task-list-edit__section">
+                    <h4 className="task-list-edit__subtitle">Zusätzliche Felder</h4>
+
+                    <div className="task-list-edit__meta-list">
+                        {newTask.metadata.map((field) => (
+                            <div key={field.id} className="task-list-edit__meta-item">
+                                <div className="task-list-edit__meta-header">
+                                    <input
+                                        className="task-list-edit__meta-name"
+                                        value={field.label}
+                                        placeholder="Feldname"
+                                        onChange={(e) =>
+                                            handleMetaChange(field.id, "label", e.target.value)
+                                        }
+                                    />
+
+                                    <DropdownMenu.Root>
+                                        <DropdownMenu.Trigger asChild>
+                                            <button className="task-list-edit__icon-btn">
+                                                {field.type === "text" && <TextIcon size={16} />}
+                                                {field.type === "number" && <Tally5Icon size={16} />}
+                                                {field.type === "date" && <CalendarIcon size={16} />}
+                                            </button>
+                                        </DropdownMenu.Trigger>
+
+                                        <DropdownMenu.Content sideOffset={4}>
+                                            <DropdownMenu.Item
+                                                onSelect={() =>
+                                                    handleMetaChange(field.id, "type", "text")
+                                                }
+                                            >
+                                                <TextIcon size={14} /> Text
+                                            </DropdownMenu.Item>
+                                            <DropdownMenu.Item
+                                                onSelect={() =>
+                                                    handleMetaChange(field.id, "type", "number")
+                                                }
+                                            >
+                                                <Tally5Icon size={14} /> Number
+                                            </DropdownMenu.Item>
+                                            <DropdownMenu.Item
+                                                onSelect={() =>
+                                                    handleMetaChange(field.id, "type", "date")
+                                                }
+                                            >
+                                                <CalendarIcon size={14} /> Date
+                                            </DropdownMenu.Item>
+                                        </DropdownMenu.Content>
+                                    </DropdownMenu.Root>
+                                </div>
+
                                 <input
-                                    type="text"
-                                    placeholder="Feldname"
-                                    value={field.label}
-                                    onChange={(e) => handleMetaChange(field.id, "label", e.target.value)}
-                                    className="flex-1 min-w-0 border border-gray-300 rounded px-3 py-2"
+                                    className="task-list-edit__meta-value"
+                                    type={field.type}
+                                    value={field.value || ""}
+                                    placeholder="Wert eingeben"
+                                    onChange={(e) =>
+                                        handleMetaChange(field.id, "value", e.target.value)
+                                    }
                                 />
-
-                                <DropdownMenu.Root>
-                                    <DropdownMenu.Trigger asChild>
-                                        <button className="w-10 h-10 flex items-center justify-center border border-gray-300 rounded hover:bg-surface">
-                                            {field.type === "text" && <TextIcon className="w-4 h-4" />}
-                                            {field.type === "number" && <Tally5Icon className="w-4 h-4" />}
-                                            {field.type === "date" && <CalendarIcon className="w-4 h-4" />}
-                                        </button>
-                                    </DropdownMenu.Trigger>
-
-                                    <DropdownMenu.Content className="bg-white border border-border rounded shadow-md p-1" sideOffset={4}>
-                                        <DropdownMenu.Item
-                                            onSelect={() => handleMetaChange(field.id, "type", "text")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
-                                        >
-                                            <TextIcon className="w-4 h-4" /> Text
-                                        </DropdownMenu.Item>
-                                        <DropdownMenu.Item
-                                            onSelect={() => handleMetaChange(field.id, "type", "number")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
-                                        >
-                                            <Tally5Icon className="w-4 h-4" /> Number
-                                        </DropdownMenu.Item>
-                                        <DropdownMenu.Item
-                                            onSelect={() => handleMetaChange(field.id, "type", "date")}
-                                            className="flex items-center gap-2 px-2 py-1 rounded hover:bg-surface cursor-pointer"
-                                        >
-                                            <CalendarIcon className="w-4 h-4" /> Date
-                                        </DropdownMenu.Item>
-                                    </DropdownMenu.Content>
-                                </DropdownMenu.Root>
                             </div>
-
-                            <input
-                                type={field.type}
-                                placeholder="Wert eingeben"
-                                value={field.value || ""}
-                                onChange={(e) => handleMetaChange(field.id, "value", e.target.value)}
-                                className="border border-gray-300 rounded px-3 py-2 w-full"
-                            />
-                        </div>
-                    ))}
+                        ))}
+                    </div>
 
                     <button
                         onClick={addCustomField}
-                        className="px-3 py-2 rounded text-white bg-gray-600 hover:bg-gray-700 mt-2 w-max"
+                        className="task-list-edit__add-field"
                     >
                         + Feld hinzufügen
                     </button>
                 </div>
 
-                {/* Buttons */}
                 <button
                     onClick={addTask}
-                    className="px-4 py-2 rounded text-white bg-green-600 hover:bg-green-700 mt-4 w-full"
+                    className="task-list-edit__action task-list-edit__action--add"
                 >
                     + Task hinzufügen
                 </button>
+
                 <button
                     onClick={handleSave}
-                    className="px-4 py-2 rounded text-white bg-blue-600 hover:bg-blue-700 mt-4 w-full"
+                    className="task-list-edit__action task-list-edit__action--save"
                 >
                     Save
                 </button>
-            </div >
-        </>
+            </div>
+        </div>
     );
 }

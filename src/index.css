@@ -1,17 +1,93 @@
-@import "tailwindcss";
+/* ========== Minimal Global Styles ========== */
 
+/* 1) Box sizing + sensible defaults */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* 2) Root Variables — nur wenige, gut genutzte Werte */
+:root{
+  --gap-sm: 0.5rem;
+  --gap-md: 1rem;
+  --card-width-desktop: 360px;
+  --card-side-padding: 0.75rem;
+  --font-sans: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  --color-text: #0f172a;
+  --color-muted: #6b7280;
+  --color-bg: #ffffff;
+}
+
+/* 3) Base body / typography */
+html, body, #root {
+  height: 100%;
+}
 body {
   margin: 0;
+  font-family: var(--font-sans);
+  color: var(--color-text);
+  background: var(--color-bg);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  line-height: 1.4;
+  font-size: 16px;
 }
 
-.react-datepicker-wrapper {
-  width: 100%;
+/* 4) Headings / paragraphs — keine großen default-margins in global */
+h1,h2,h3,h4,h5,h6,p {
+  margin: 0;
+  padding: 0;
 }
 
-.react-datepicker__input-container {
+/* 5) Utility: basic flex container (global, re-use in components) */
+.u-row { display: flex; flex-direction: row; gap: var(--gap-sm); }
+.u-col { display: flex; flex-direction: column; gap: var(--gap-sm); }
+
+/* 6) Card sizing defaults (minimal): components may extend this */
+.card-item {
+  width: var(--card-width-desktop);
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+}
+.card {
   width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap-sm);
+  box-sizing: border-box;
+  padding: var(--card-side-padding);
+  background: var(--color-bg);
 }
 
-.react-datepicker__input-container input {
-  width: 100%;
+/* Mobile: cards full width with side padding */
+@media (max-width: 640px) {
+  .card-item { width: calc(100% - 1rem); } /* 0.5rem side paddings */
+}
+
+/* 7) Small, shared components: badge baseline */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.125rem 0.5rem;
+  font-size: 0.75rem;
+  line-height: 1;
+  border-radius: 9999px;
+  white-space: nowrap;
+}
+
+/* 8) Form basics (keep minimal) */
+input, textarea, select, button {
+  font-family: inherit;
+  font-size: 1rem;
+}
+button { cursor: pointer; }
+
+/* 9) Small helpers */
+.sr-only {
+  position: absolute !important;
+  width: 1px; height: 1px; padding: 0; margin: -1px;
+  overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0;
 }

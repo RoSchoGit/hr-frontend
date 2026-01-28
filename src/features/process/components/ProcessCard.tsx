@@ -1,8 +1,7 @@
 // src/features/process/ProcessCard.tsx (angepasst)
 import { Component } from "react";
 import type { Process } from "@/features/process/Process";
-import { BaseCard } from "@/components/BaseCard";
-import EntityCardContent from "@/features/task/components/EntityCardContent";
+import EntityBaseCard from "@/components/EntityBaseCard";
 
 type ProcessCardProps = {
   process: Process;
@@ -42,9 +41,9 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
     const { process, handleClick, onDelete, onEdit, onInfo, menuOpen, setMenuOpen } = this.props;
 
     return (
-      <BaseCard
+      <EntityBaseCard
+        entity={process}
         title={process.title}
-        meta={process}
         onClick={() => handleClick(process)}
         onEdit={() => onEdit?.(process)}
         onDelete={() => onDelete?.(process)}
@@ -52,9 +51,7 @@ export class ProcessCard extends Component<ProcessCardProps, ProcessCardState> {
         allowEditing={true}
         menuOpen={menuOpen ?? false}
         setMenuOpen={setMenuOpen}
-      >
-        <EntityCardContent entity={process} />
-      </BaseCard>
+      />
     );
   }
 }

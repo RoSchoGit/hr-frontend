@@ -1,17 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import type { DragEndEvent } from "@dnd-kit/core";
 import { DndContext, closestCenter } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy, arrayMove } from "@dnd-kit/sortable";
 import type { Task } from "@/features/task/Task";
 import SortableTaskCard from "./SortableTaskCard";
 import TaskCard from "./TaskCard";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTaskStore } from "../store/useTaskStore";
 import DeleteTaskConfirmModal from "@/pages/task/DeleteTaskConfirmModal";
+import "./TaskList.css";
 
 type TaskListProps = {
   tasks: Task[];
@@ -56,35 +53,27 @@ const TaskList = ({ tasks = [], setTasks, onMoveTask }: TaskListProps) => {
     };
   }, []);
 
-  // --- in TaskList.tsx: handleDragEnd ersetzen ---
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
     if (!over || active.id === over.id) return;
 
     const oldIndex = tasks.findIndex((t) => t.id === active.id);
     const newIndex = tasks.findIndex((t) => t.id === over.id);
-    if (oldIndex === -1 || newIndex === -1) {
-      console.warn("DragEnd: index not found", { active: active.id, over: over.id });
-      return;
-    }
+    if (oldIndex === -1 || newIndex === -1) return;
 
     if (setTasks) {
       setTasks((current) => arrayMove(current, oldIndex, newIndex));
     } else if (onMoveTask) {
-      // <-- hier: übergebe newIndex (nicht direction)
       onMoveTask(oldIndex, newIndex);
     }
   };
 
   if (!tasks.length) {
     return (
-      <div className="p-4 sm:p-6">
-        <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-lg p-4 sm:p-6 text-center shadow-sm">
-          <h3 className="font-semibold text-lg mb-2">Keine Tasks vorhanden</h3>
-          <p className="text-sm sm:text-base">
-            Leider existieren noch keine Tasks für diesen Prozess.
-            Füge über das Formular unten neue Tasks hinzu.
-          </p>
+      <div className="task-list">
+        <div className="task-list__empty">
+          <h3>Keine Tasks vorhanden</h3>
+          <p>Leider existieren noch keine Tasks für diesen Prozess. Füge über das Formular unten neue Tasks hinzu.</p>
         </div>
       </div>
     );
@@ -116,7 +105,7 @@ const TaskList = ({ tasks = [], setTasks, onMoveTask }: TaskListProps) => {
 
   return (
     <>
-      <div className="flex flex-col gap-2 py-2 px-2 sm:px-4" ref={listRef}>
+      <div className="task-list" ref={listRef}>
         {(setTasks || onMoveTask) ? (
           <DndContext collisionDetection={closestCenter} onDragEnd={handleDragEnd}>
             <SortableContext items={itemIds} strategy={verticalListSortingStrategy}>

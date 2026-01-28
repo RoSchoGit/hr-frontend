@@ -93,7 +93,7 @@ export class ProcessImpl implements Process {
 //    this.addHistory(ProcessStatus.OPEN, creator, "Process created");
   }
 
-  setStatus(newStatus: ProcessStatus, changedBy: string, comment?: string) {
+  setStatus(newStatus: ProcessStatus) {
     this.status = newStatus;
     if (newStatus === ProcessStatus.DONE) {
       this.completedAt = new Date().toISOString().substring(0,19);

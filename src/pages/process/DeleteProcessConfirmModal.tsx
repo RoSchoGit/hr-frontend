@@ -1,44 +1,67 @@
-// src/features/task/components/DeleteConfirmModal.tsx
+import { useRef, useEffect } from "react";
 import useProcessStore from "@/features/process/store/useProcessStore";
+import "./DeleteProcessConfirmModal.css";
 
 export default function DeleteProcessConfirmModal() {
-    const deleteCandidate = useProcessStore((s) => s.deleteCandidate);
-    const deleteSelectedProcess = useProcessStore((s) => s.deleteSelectedProcess);
-    const setDeleteCandidate = useProcessStore((s) => s.setDeleteCandidate);
+  const deleteCandidate = useProcessStore((s) => s.deleteCandidate);
+  const deleteSelectedProcess = useProcessStore((s) => s.deleteSelectedProcess);
+  const setDeleteCandidate = useProcessStore((s) => s.setDeleteCandidate);
 
-    if (!deleteCandidate) return null;
+  const cancelRef = useRef<HTMLButtonElement | null>(null);
 
-    return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-            <div className="bg-white rounded p-6 w-full max-w-md shadow-lg">
-                <h3 className="text-lg font-semibold mb-2">Process wirklich löschen?</h3>
-                <p className="mb-4">Willst du "{deleteCandidate.title}" wirklich löschen?</p>
+  useEffect(() => {
+    // Fokus auf Abbrechen-Button, wenn Modal geöffnet
+    if (deleteCandidate) {
+      cancelRef.current?.focus();
+    }
+  }, [deleteCandidate]);
 
-                <div className="flex justify-end gap-2">
-                    <button
-                        className="px-3 py-2 rounded border"
-                        onClick={() => setDeleteCandidate(null)}
-                    >
-                        Abbrechen
-                    </button>
+  if (!deleteCandidate) return null;
 
-                    <button
-                        className="px-3 py-2 rounded bg-red-600 text-white"
-                        onClick={async () => {
-                            try {
-                                // erst hier löschen
-                                await deleteSelectedProcess();
-                                // sicherstellen, dass Kandidat weg ist
-                                setDeleteCandidate(null);
-                            } catch (err) {
-                                console.error("Fehler beim Löschen:", err);
-                            }
-                        }}
-                    >
-                        Löschen
-                    </button>
-                </div>
-            </div>
+  return (
+    <div className="delete-modal__overlay" aria-hidden={false}>
+      <div
+        className="delete-modal"
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="delete-modal-title"
+        aria-describedby="delete-modal-desc"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <h3 id="delete-modal-title" className="delete-modal__title">
+          Process wirklich löschen?
+        </h3>
+
+        <p id="delete-modal-desc" className="delete-modal__body">
+          Willst du "{deleteCandidate.title}" wirklich löschen?
+        </p>
+
+        <div className="delete-modal__actions">
+          <button
+            ref={cancelRef}
+            type="button"
+            className="btn btn--outline"
+            onClick={() => setDeleteCandidate(null)}
+          >
+            Abbrechen
+          </button>
+
+          <button
+            type="button"
+            className="btn btn--danger"
+            onClick={async () => {
+              try {
+                await deleteSelectedProcess();
+                setDeleteCandidate(null);
+              } catch (err) {
+                console.error("Fehler beim Löschen:", err);
+              }
+            }}
+          >
+            Löschen
+          </button>
         </div>
-    );
+      </div>
+    </div>
+  );
 }

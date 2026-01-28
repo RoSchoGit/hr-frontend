@@ -1,28 +1,14 @@
 import { Component } from "react";
-import EntityCardContent from "./EntityCardContent";
-import { BaseCard } from "@/components/BaseCard";
-import type { Task } from "../Task";
+import EntityBaseCard from "@/components/EntityBaseCard";
 
-type TaskCardProps = {
-  task: Task;
-  menuOpen: boolean;
-  setMenuOpen: (open: boolean) => void;
-  onEdit?: (task: Task) => void;
-  onInfo?: (task: Task) => void;
-  onClick?: () => void;
-  setDeleteCandidate?: (task: Task) => void;
-  showReorderButtons?: boolean;
-  dragHandle?: React.ReactNode;
-  allowEditing?: boolean;
-};
 export class TaskCard extends Component<any, any> {
   render() {
     const { task, setDeleteCandidate, onEdit, onInfo, onClick, menuOpen, setMenuOpen } = this.props;
 
     return (
-      <BaseCard
+      <EntityBaseCard
         title={task.title}
-        meta={task}
+        entity={task}
         onClick={onClick}
         onEdit={() => onEdit?.(task)}
         onDelete={() => setDeleteCandidate?.(task)}
@@ -33,9 +19,7 @@ export class TaskCard extends Component<any, any> {
         allowEditing={this.props.allowEditing ?? false}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
-      >
-        <EntityCardContent entity={task} />
-      </BaseCard>
+      />
     );
   }
 }

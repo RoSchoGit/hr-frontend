@@ -2,9 +2,9 @@ import React from "react";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import { GripVertical } from "lucide-react";
-import { BaseCard } from "@/components/BaseCard";
-import EntityCardContent from "./EntityCardContent";
 import type { Task } from "../Task";
+import "./SortableTaskCard.css";
+import EntityBaseCard from "@/components/EntityBaseCard";
 
 type Props = {
   task: Task;
@@ -31,8 +31,6 @@ export default function SortableTaskCard({
   const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
-    opacity: isDragging ? 0.8 : 1,
-    cursor: isDragging ? "grabbing" : "pointer",
   };
 
   const dragHandle = (
@@ -41,7 +39,7 @@ export default function SortableTaskCard({
       {...attributes}
       {...listeners}
       onClick={(e) => e.stopPropagation()}
-      className="p-1 hover:text-text cursor-grab"
+      className="sortable-task-card__drag-handle"
       aria-label="Aufgabe verschieben"
     >
       <GripVertical size={16} />
@@ -49,10 +47,15 @@ export default function SortableTaskCard({
   );
 
   return (
-    <div ref={setNodeRef} style={style} data-task-id={task.id}>
-      <BaseCard
+    <div
+      ref={setNodeRef}
+      style={style}
+      data-task-id={task.id}
+      className={`sortable-task-card${isDragging ? " dragging" : ""}`}
+    >
+      <EntityBaseCard
         title={task.title}
-        meta={task}
+        entity={task}
         onClick={() => onClick?.(task.id)}
         onEdit={() => onEdit?.(task.id)}
         onDelete={() => setDeleteCandidate?.(task)}
@@ -62,9 +65,7 @@ export default function SortableTaskCard({
         allowEditing={true}
         menuOpen={menuOpen}
         setMenuOpen={setMenuOpen}
-      >
-        <EntityCardContent entity={task} />
-      </BaseCard>
+      />
     </div>
   );
 }

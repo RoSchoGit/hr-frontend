@@ -25,14 +25,9 @@ export default function ProcessLayout() {
     }
   }, [process, selectedProcess, selectProcess]);
 
-  const header = (
-    <Header title={process?.title} />
-  );
-
   return (
     <>
-      {header}
-      <Outlet context={{ header, process }} />
+      <Outlet context={{ process }} />
     </>
   );
 }

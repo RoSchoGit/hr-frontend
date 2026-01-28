@@ -1,0 +1,83 @@
+/* TaskEditPage.css */
+
+.task-edit {
+    padding: 1.5rem;
+  }
+  
+  .task-edit__form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  
+  .task-edit__field {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .task-edit__label {
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .task-edit__input,
+  .task-edit__select,
+  .task-edit__textarea {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #d1d5db; /* gray-300 */
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+  }
+  
+  .task-edit__textarea {
+    resize: vertical;
+    min-height: 80px;
+  }
+  
+  .task-edit__error {
+    color: #dc2626; /* red-600 */
+    font-size: 0.875rem;
+  }
+  
+  .task-edit__actions {
+    display: flex;
+    gap: 0.5rem;
+  }
+  
+  .task-edit__btn {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+  
+  .task-edit__btn--primary {
+    background-color: #2563eb; /* blue-600 */
+    color: #ffffff;
+    border: none;
+  }
+  
+  .task-edit__btn--primary:hover {
+    background-color: #1d4ed8; /* blue-700 */
+  }
+  
+  .task-edit__btn--secondary {
+    background-color: transparent;
+    border: 1px solid #d1d5db;
+  }
+  
+  .task-edit__btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+  
+  .task-edit__loading {
+    padding: 1.5rem;
+  }
+  
+  .task-edit__error-page {
+    padding: 1.5rem;
+    color: #dc2626;
+  }
+  

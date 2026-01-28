@@ -1,0 +1,213 @@
+/* BaseCard.css — nur Werte durch Theme-Variablen ersetzt.
+   Keine Layout-/Position-Änderungen. */
+
+   .base-card {
+    display: flex; /* unverändert */
+    border-width: 2px; /* unverändert (Farbe wird inline gesetzt) */
+    border-style: solid;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    cursor: pointer;
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+    max-width: var(--card-width-desktop);
+    box-sizing: border-box;
+  }
+  
+  .base-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  
+  /* content area (links) — Struktur unverändert, padding/gap aus Theme */
+  .base-card__content {
+    flex: 1;
+    min-width: 0;
+    padding: var(--card-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+  }
+  
+  /* side area (expanded vs collapsed) — Struktur unverändert */
+  .base-card__side {
+    flex-basis: auto;
+    flex-shrink: 0;
+    position: relative;
+  }
+  
+  .base-card__side--expanded {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: calc(var(--card-gap) / 2);
+    padding: 0.25rem;
+  }
+  
+  .base-card__side--collapsed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: calc(var(--card-gap) / 2);
+    padding: 0.5rem;
+  }
+  
+  /* status dots (keine Veränderung der Position/Struktur) */
+  .base-card__status-dots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: calc(var(--card-gap) / 2);
+  }
+  
+  .base-card__status-dot {
+    width: 0.5rem; /* unverändert */
+    height: 0.5rem;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+  
+  /* drag handle */
+  .base-card__drag-handle { cursor: grab; }
+  
+  /* menu */
+  .base-card__menu { position: relative; }
+  
+  .base-card__menu-panel {
+    position: absolute;
+    right: 0;
+    margin-top: 0.25rem;
+    width: 7rem; /* unverändert */
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10;
+  }
+  
+  .base-card__menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+    font-family: var(--font-family-sans);
+  }
+  
+  /* hover background for menu items (surface) */
+  .base-card__menu-item:hover { background-color: #f1f5f9; }
+  
+  .base-card__menu-item--edit { color: #2563eb; }
+  .base-card__menu-item--delete { color: #dc2626; }
+  .base-card__menu-item--info { color: #111827; }
+  
+  .base-card__menu-item svg { margin-right: 0.25rem; flex-shrink: 0; }
+  
+
+  /* EntityCardContent.css — nur Werte aus theme.css verwendet.
+   Struktur / Positionen bleiben exakt wie vorher. */
+
+   .entity-card {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--card-gap);
+    max-width: var(--card-width-desktop);
+    font-family: var(--font-family-sans);
+    box-sizing: border-box;
+  }
+  
+  @media (max-width: 640px) {
+    .entity-card { max-width: 100%; }
+  }
+  
+  .entity-card__badge {
+    position: relative;
+    font-size: var(--badge-font-size);
+    padding: var(--badge-padding-y) var(--badge-padding-x);
+    border-radius: 0.999rem; /* unverändert optisch */
+    font-weight: 500;
+    white-space: nowrap;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+  }
+  
+  .entity-card__title {
+    font-size: inherit; /* Schriftgröße aus Kontext / body; du kannst global ändern */
+    font-weight: 600;
+    margin: 0;
+    font-family: var(--font-family-sans);
+    box-sizing: border-box;
+  }
+  
+  /* Tooltip (unverändert, nur box-sizing sichergestellt) */
+  .entity-card__tooltip {
+    position: absolute;
+    top: -2rem;
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 0.25rem 0.5rem;
+    font-size: 0.75rem;
+    white-space: nowrap;
+    border-radius: 0.375rem;
+    background-color: #1f2937;
+    color: #ffffff;
+    z-index: 10;
+    box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1),
+                0 4px 6px -2px rgba(0,0,0,0.05);
+    box-sizing: border-box;
+  }
+  
+  .entity-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--card-gap);
+}
+
+.entity-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--card-gap);
+}
+
+.entity-card-controls {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-shrink: 0;
+}
+
+.entity-card-controls button {
+  background: transparent;
+  border: 0;
+  padding: 0.25rem;
+  cursor: pointer;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.entity-card-menu {
+  position: relative;
+}
+
+.entity-card-menu-panel {
+  position: absolute;
+  right: 0;
+  top: 100%;
+  margin-top: 0.25rem;
+  background: white;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.25rem;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+  z-index: 20;
+}
+

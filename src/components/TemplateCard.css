@@ -1,0 +1,107 @@
+/* =========================================================
+   TemplateCard – Kartenlayout & Varianten
+   ========================================================= */
+
+   .template-card {
+    display: flex;
+    border: 2px solid rgba(0,0,0,0.06);
+    border-radius: 0.5rem; /* 8px */
+    background-color: white;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    transition: box-shadow 0.2s ease;
+    user-select: none;
+    flex: 1 1 auto;
+    width: 100%;
+  }
+  
+  .template-card--clickable {
+    cursor: pointer;
+  }
+  
+  .template-card--clickable:hover {
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  }
+  
+  .template-card--muted {
+    opacity: 0.95;
+    background-color: #f5f5f5; /* bg-surface */
+  }
+  
+  .template-card--skeleton {
+    background-color: #e2e8f0; /* slate-100 */
+    border-color: #e2e8f0;
+    animation: pulse 1.5s infinite;
+  }
+  
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+  
+  .template-card__content {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 0.5rem; /* 2 */
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem; /* 1 */
+  }
+  
+  .template-card__title {
+    font-weight: 500;
+    font-size: 1rem;
+    text-align: left;
+  }
+  
+  .template-card__subtitle {
+    font-size: 0.875rem;
+    color: #6b7280; /* gray-500 */
+  }
+  
+  .template-card__right {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem; /* 2 */
+    flex-shrink: 0;
+    padding: 0.5rem; /* 2 */
+  }
+  
+  .template-card__status-dots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem; /* 1 */
+    margin-right: 0.25rem;
+  }
+  
+  .template-card__status-dots span {
+    width: 0.5rem; /* 2 */
+    height: 0.5rem;
+    border-radius: 9999px;
+    background-color: transparent;
+  }
+  
+  .template-card__cta {
+    padding: 0.25rem 0.75rem; /* py-1 px-3 */
+    border-radius: 0.25rem;
+    font-size: 0.875rem;
+    background-color: #2563eb; /* blue-600 */
+    color: white;
+    cursor: pointer;
+  }
+  
+  .template-card__cta:hover {
+    background-color: #1e40af; /* blue-700 */
+  }
+  
+  .template-card__chevron {
+    width: 2rem; /* 8 */
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 0.25rem;
+    color: #9ca3af; /* gray-400 */
+  }
+  

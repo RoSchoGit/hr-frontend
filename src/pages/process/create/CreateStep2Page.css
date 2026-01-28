@@ -1,0 +1,99 @@
+.create-step2 {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+  }
+  
+  .create-step2 h3,
+  .create-step2 h4 {
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+  }
+  
+  .create-step2 label {
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+  
+  .create-step2 input,
+  .create-step2 textarea,
+  .create-step2 select {
+    border: 1px solid #9ca3af;
+    border-radius: 0.375rem;
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .create-step2 textarea {
+    resize: vertical;
+  }
+  
+  .create-step2 .section {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+    border-bottom: 1px solid #e5e7eb;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+  
+  .create-step2 .metadata-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    border: 1px solid #d1d5db;
+    padding: 0.5rem;
+    border-radius: 0.375rem;
+  }
+  
+  .create-step2 .metadata-field-header {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+  }
+  
+  .create-step2 .metadata-field input {
+    flex: 1;
+  }
+  
+  .create-step2 button {
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .create-step2 .btn-add {
+    background-color: #4b5563;
+    color: white;
+  }
+  
+  .create-step2 .btn-add:hover {
+    background-color: #374151;
+  }
+  
+  .create-step2 .btn-task {
+    background-color: #16a34a;
+    color: white;
+  }
+  
+  .create-step2 .btn-task:hover {
+    background-color: #15803d;
+  }
+  
+  .create-step2 .btn-next {
+    background-color: #2563eb;
+    color: white;
+  }
+  
+  .create-step2 .btn-next:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+  }
+  
+  .create-step2 .btn-next:hover:not(:disabled) {
+    background-color: #1d4ed8;
+  }
+  

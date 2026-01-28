@@ -1,21 +1,11 @@
-// src/components/BottomNav.tsx
 import React, { useCallback, useEffect, useRef, useState } from "react";
 import { NavLink, useLocation, useNavigate, useParams } from "react-router-dom";
-import {
-  User,
-  Settings,
-  ArrowLeft,
-  Plus,
-  List,
-  ArrowDownAZ,
-  Calendar,
-  UserCheck,
-  Clock,
-} from "lucide-react";
+import { User, Settings, ArrowLeft, Plus, List, ArrowDownAZ, Calendar, UserCheck, Clock } from "lucide-react";
 
 import { useProcessStore } from "@/features/process/store/useProcessStore";
 import { useTaskStore } from "@/features/task/store/useTaskStore";
 import type { Task } from "@/features/task/Task";
+import "./BottomNav.css";
 
 // --- small helpers that use getState (safe inside event handlers or top-level helpers) ---
 export const getProcessById = (id: string) => {
@@ -53,7 +43,6 @@ const BottomNav: React.FC = () => {
   const sortKey = useProcessStore((s) => s.sortKey);
   const setSortKey = useProcessStore((s) => s.setSortKey);
 
-  // plus button behavior
   const handlePlusClick = useCallback(() => {
     if (isOnProcessList) {
       navigate("/processes/create/step-1");
@@ -94,26 +83,19 @@ const BottomNav: React.FC = () => {
   }, [setSortKey]);
 
   return (
-    <footer className="fixed inset-x-0 bottom-0 h-16 z-40 bg-indigo-100 border-t border-indigo-200">
-      <div className="grid grid-cols-5 max-w-xl mx-auto h-full place-items-center px-3">
-
+    <footer className="bottom-nav">
+      <div className="bottom-nav__inner">
         {/* Slot 1: Processes */}
-        <NavLink
-          to="/processes"
-          className="w-full flex items-center justify-center"
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
+        <NavLink to="/processes" className="bottom-nav__slot">
+          <div className="bn-icon">
             <List size={20} />
           </div>
           <span className="sr-only">Prozesse</span>
         </NavLink>
 
         {/* Slot 2: Settings */}
-        <NavLink
-          to="/settings"
-          className="w-full flex items-center justify-center"
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
+        <NavLink to="/settings" className="bottom-nav__slot">
+          <div className="bn-icon">
             <Settings size={20} />
           </div>
           <span className="sr-only">Einstellungen</span>
@@ -121,37 +103,27 @@ const BottomNav: React.FC = () => {
 
         {/* Slot 3: Plus */}
         {(isOnProcessList || isOnTaskList) ? (
-          <button
-            onClick={handlePlusClick}
-            aria-label="Neu anlegen"
-            className="w-full flex items-center justify-center"
-          >
-            <div className="w-10 h-10 bg-white rounded-full shadow flex items-center justify-center text-blue-600 hover:text-blue-800">
+          <button onClick={handlePlusClick} aria-label="Neu anlegen" className="bottom-nav__slot">
+            <div className="bn-plus">
               <Plus size={18} />
             </div>
           </button>
         ) : (
-          <div className="w-full flex items-center justify-center">
-            <div className="w-10 h-10" />
+          <div className="bottom-nav__slot">
+            <div className="bn-empty" />
           </div>
         )}
 
         {/* Slot 4: Profile */}
-        <NavLink
-          to="/profile"
-          className="w-full flex items-center justify-center"
-        >
-          <div className="w-10 h-10 flex items-center justify-center">
+        <NavLink to="/profile" className="bottom-nav__slot">
+          <div className="bn-icon">
             <User size={20} />
           </div>
           <span className="sr-only">Profil</span>
         </NavLink>
 
         {/* Slot 5: Action (Sort ODER Back) */}
-        <div
-          ref={sortRef}
-          className="w-full flex items-center justify-center relative"
-        >
+        <div ref={sortRef} className="bottom-nav__slot bn-sort-wrapper">
           {isOnProcessList ? (
             <>
               <button
@@ -162,7 +134,7 @@ const BottomNav: React.FC = () => {
                 aria-haspopup="true"
                 aria-expanded={openSort}
                 aria-label="Sortierung"
-                className="w-10 h-10 flex items-center justify-center"
+                className="bn-button"
               >
                 <ArrowDownAZ size={20} />
               </button>
@@ -171,7 +143,7 @@ const BottomNav: React.FC = () => {
                 <div
                   role="menu"
                   aria-label="Sortieroptionen"
-                  className="fixed bottom-16 right-4 z-50 rounded-2xl bg-white border shadow-lg p-1"
+                  className="bn-sort-panel"
                   style={{ width: "min(92vw, 20rem)" }}
                 >
                   {SORT_OPTIONS.map((opt) => {
@@ -187,15 +159,15 @@ const BottomNav: React.FC = () => {
                         }}
                         role="menuitem"
                         aria-pressed={selected}
-                        className="w-full flex items-center gap-3 px-4 py-2 rounded hover:bg-slate-50"
+                        className={`bn-menu-item ${selected ? "bn-menu-item--selected" : ""}`}
                         style={{
-                          backgroundColor: selected ? "rgba(37,99,235,0.06)" : "transparent",
+                          backgroundColor: selected ? "rgba(37,99,235,0.06)" : undefined,
                           color: selected ? "#2563eb" : "#0f172a",
                         }}
                       >
                         <Icon size={18} className="flex-shrink-0" />
                         <span
-                          className="flex-1 truncate"
+                          className="bn-menu-item__label"
                           style={{ fontWeight: selected ? 600 : 400 }}
                         >
                           {opt.label}
@@ -208,7 +180,7 @@ const BottomNav: React.FC = () => {
                             viewBox="0 0 24 24"
                             fill="none"
                             aria-hidden
-                            className="flex-shrink-0 text-blue-600"
+                            className="bn-menu-item__check"
                           >
                             <path
                               d="M5 13l4 4L19 7"
@@ -226,15 +198,11 @@ const BottomNav: React.FC = () => {
               )}
             </>
           ) : showBackButton ? (
-            <button
-              onClick={handleBack}
-              aria-label="Zurück"
-              className="w-10 h-10 flex items-center justify-center"
-            >
+            <button onClick={handleBack} aria-label="Zurück" className="bn-button">
               <ArrowLeft size={20} />
             </button>
           ) : (
-            <div className="w-10 h-10" />
+            <div className="bn-empty" />
           )}
         </div>
       </div>

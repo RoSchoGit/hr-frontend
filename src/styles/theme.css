@@ -1,0 +1,13 @@
+:root {
+  --card-width-desktop: 500px;
+  --card-max-width: var(--card-width-desktop);
+  --card-min-width: 10px; /* <- stell hier dein gewünschtes Minimum ein */
+  --card-padding: 12px;
+  --card-gap: 8px;
+  --card-height: 64px;
+  --badge-font-size: 0.75rem;
+  --badge-padding-y: 2px;
+  --badge-padding-x: 8px;
+  --font-family-sans: Inter, system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+  --bottom-nav-height: 64px;
+}

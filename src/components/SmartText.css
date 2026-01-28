@@ -1,0 +1,41 @@
+/* =========================================================
+   SmartText – Typografie & Textverhalten
+   ========================================================= */
+
+/* -------- Base Text Behavior -------- */
+.smart-text {
+    overflow-wrap: break-word;
+    word-break: break-word;
+    hyphens: auto;
+    white-space: pre-wrap;
+  }
+  
+  /* -------- Variants -------- */
+  
+  .smart-text--h1 {
+    font-size: 1.5rem;       /* text-2xl */
+    font-weight: 600;
+  }
+  
+  .smart-text--h2 {
+    font-size: 1.125rem;     /* text-lg */
+    font-weight: 600;
+  }
+  
+  .smart-text--body {
+    font-size: 1rem;         /* text-base */
+  }
+  
+  .smart-text--small {
+    font-size: 0.875rem;     /* text-sm */
+    color: #4b5563;          /* gray-600 */
+  }
+  
+  /* NEU: Truncate-Variante */
+  .smart-text--truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+  }
+  

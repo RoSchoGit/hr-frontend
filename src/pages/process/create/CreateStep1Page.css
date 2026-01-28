@@ -1,0 +1,66 @@
+.create-step1 {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1rem;
+  }
+  
+  .create-step1 label {
+    font-weight: 500;
+    margin-top: 0.5rem;
+  }
+  
+  .create-step1 input,
+  .create-step1 textarea,
+  .create-step1 select {
+    border: 1px solid #d1d5db; /* grau */
+    border-radius: 0.375rem; /* abgerundet */
+    padding: 0.5rem 0.75rem;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  .create-step1 textarea {
+    resize: vertical;
+  }
+  
+  .create-step1 .template-button {
+    padding: 0.5rem 0.75rem;
+    background-color: #e5e7eb; /* grau-200 */
+    border-radius: 0.375rem;
+    text-align: left;
+    cursor: pointer;
+    width: 100%;
+    border: none;
+  }
+  
+  .create-step1 .template-button:hover {
+    background-color: #d1d5db; /* grau-300 */
+  }
+  
+  .create-step1 .next-button {
+    margin-top: 1rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.375rem;
+    background-color: #2563eb; /* blau-600 */
+    color: white;
+    border: none;
+    cursor: pointer;
+    width: 100%;
+  }
+  
+  .create-step1 .next-button:hover:not(:disabled) {
+    background-color: #1d4ed8; /* blau-700 */
+  }
+  
+  .create-step1 .next-button:disabled {
+    background-color: #9ca3af; /* grau-400 */
+    cursor: not-allowed;
+  }
+  
+  .create-step1 h3 {
+    font-weight: 600;
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+  }
+  

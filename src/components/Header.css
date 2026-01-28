@@ -1,0 +1,59 @@
+/* =========================================================
+   Header
+   ========================================================= */
+
+   .app-header {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  
+    background-color: #e0e7ff; /* indigo-100 */
+    padding: 0.5rem 1rem;      /* px-4 py-2 */
+    min-height: 2.5rem;        /* ~40px */
+  }
+  
+  /* ---------------------------------------------------------
+     Layout
+     --------------------------------------------------------- */
+  
+  .app-header__content {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* ---------------------------------------------------------
+     Title
+     --------------------------------------------------------- */
+  
+  .app-header__title {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+      Roboto, sans-serif;
+    font-weight: 600;
+    color: #1f2937; /* gray-800 */
+    text-align: center;
+    letter-spacing: 0.025em;
+    line-height: 1.25;
+  
+    /* mobile */
+    font-size: 1.125rem; /* text-lg */
+  
+    /* Truncation */
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* ---------------------------------------------------------
+     Responsive
+     --------------------------------------------------------- */
+  
+  @media (min-width: 768px) {
+    .app-header__title {
+      font-size: 1.25rem; /* text-xl */
+      max-width: 90%;
+    }
+  }
+  

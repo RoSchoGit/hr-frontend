@@ -128,16 +128,6 @@ const parseLocalStringToDate = (raw: string, mode: Mode): Date | undefined => {
     }
 };
 
-/**
- * Parse a Date (possibly from react-datepicker) to the input-string representation expected by native input ("YYYY-MM-DD", "HH:mm", "YYYY-MM-DDTHH:mm")
- */
-const dateToInputString = (d: Date | null, mode: Mode): string => {
-    if (!d) return "";
-    if (mode === "date") return formatLocalDate(d);
-    if (mode === "time") return formatLocalTime(d);
-    return formatLocalDateTime(d);
-};
-
 export default function DateTimeInput({
     label,
     mode = "date",

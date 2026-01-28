@@ -1,0 +1,81 @@
+/* =========================================================
+   DateField
+   ========================================================= */
+
+   .date-field {
+    position: relative;
+  }
+  
+  /* ---------------------------------------------------------
+     Trigger button
+     --------------------------------------------------------- */
+  
+  .date-field__button {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  
+    padding: 0.5rem 0.75rem;
+    background-color: #ffffff;
+  
+    border: 1px solid #d1d5db;
+    border-radius: 0.375rem;
+  
+    cursor: pointer;
+  }
+  
+  .date-field__button:focus-visible {
+    outline: none;
+    border-color: #60a5fa;
+    box-shadow: 0 0 0 2px rgba(96, 165, 250, 0.6);
+  }
+  
+  .date-field__value {
+    font-size: 0.875rem;
+    color: #0f172a;
+  }
+  
+  .date-field__icon {
+    width: 1rem;
+    height: 1rem;
+    color: #475569;
+  }
+  
+  /* ---------------------------------------------------------
+     Calendar popup
+     --------------------------------------------------------- */
+  
+  .date-field__popup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+  
+    z-index: 20;
+    margin-top: 0.5rem;
+  
+    padding: 0.5rem;
+    background-color: #ffffff;
+  
+    border: 1px solid #e2e8f0;
+    border-radius: 0.375rem;
+  
+    box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Mobile: full width */
+  @media (max-width: 639px) {
+    .date-field__popup {
+      width: 100vw;
+      left: 0;
+    }
+  }
+  
+  /* Desktop: fixed width, aligned right */
+  @media (min-width: 640px) {
+    .date-field__popup {
+      right: 0;
+      left: auto;
+    }
+  }
+  

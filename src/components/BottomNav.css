@@ -1,0 +1,195 @@
+.bottom-nav {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 4rem; /* h-16 */
+    z-index: 40;
+    background-color: #eef2ff; /* indigo-100 */
+    border-top: 1px solid #e0e7ff; /* indigo-200 */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  
+  .bottom-nav__inner {
+    width: 100%;
+    max-width: 36rem; /* max-w-xl */
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    height: 100%;
+    align-items: center;
+    padding-left: 0.75rem; /* px-3 */
+    padding-right: 0.75rem;
+    box-sizing: border-box;
+  }
+  
+  /* Slot wrapper common */
+  .bottom-nav__slot {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  /* icon wrapper: w-10 h-10 */
+  .bn-icon {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Plus button special */
+  .bn-plus {
+    width: 2.5rem;
+    height: 2.5rem;
+    background-color: #ffffff;
+    border-radius: 9999px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #2563eb; /* text-blue-600 */
+    transition: color 0.12s ease, box-shadow 0.12s ease;
+  }
+  .bn-plus:hover {
+    color: #1d4ed8; /* text-blue-800 */
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  
+  /* placeholder empty icon area */
+  .bn-empty {
+    width: 2.5rem;
+    height: 2.5rem;
+  }
+  
+  /* Buttons that look like icons (accessible) */
+  .bn-button {
+    width: 2.5rem;
+    height: 2.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: transparent;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+  }
+  
+  /* Sort/Back slot container has relative positioning for menu */
+  .bn-sort-wrapper {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+  }
+  
+  /* Sort dropdown panel */
+  .bn-sort-panel {
+    position: fixed;
+    bottom: 4rem; /* bottom-16 */
+    right: 1rem;  /* right-4 */
+    z-index: 50;
+    border-radius: 1rem; /* rounded-2xl ~ 1rem */
+    background-color: #ffffff;
+    border: 1px solid rgba(0,0,0,0.06);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+    padding: 0.25rem; /* p-1 */
+    box-sizing: border-box;
+    width: min(92vw, 20rem); /* same inline as before */
+  }
+  
+  /* menu item */
+  .bn-menu-item {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem; /* gap-3 */
+    padding: 0.5rem 1rem; /* px-4 py-2 approximated */
+    border-radius: 0.5rem;
+    background: transparent;
+    color: #0f172a; /* default text */
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+    text-align: left;
+    box-sizing: border-box;
+  }
+  
+  .bn-menu-item:hover {
+    background-color: #f8fafc; /* slate-50 */
+  }
+  
+  /* selected style helpers (applied inline in JSX in original) */
+  .bn-menu-item--selected {
+    background-color: rgba(37,99,235,0.06); /* selected bg */
+    color: #2563eb;
+  }
+  
+  /* label truncation within menu item */
+  .bn-menu-item__label {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  
+  /* checkmark SVG wrapper color */
+  .bn-menu-item__check {
+    width: 1.125rem; /* approx 18px */
+    height: 1.125rem;
+    flex-shrink: 0;
+    color: #2563eb;
+  }
+  
+  /* screen-reader only utility */
+  .sr-only {
+    position: absolute !important;
+    height: 1px; width: 1px;
+    overflow: hidden;
+    clip: rect(1px, 1px, 1px, 1px);
+    white-space: nowrap;
+    border: 0; padding: 0; margin: -1px;
+  }
+  
+  /* ensure slot can anchor absolute dropdown (you already have this but safe) */
+.bottom-nav__slot { position: relative; }
+
+/* collapsed panel (single menu icon) */
+.bn-collapsed-panel {
+  position: absolute;
+  bottom: calc(4rem + 0.5rem); /* über der Nav (Nav height 4rem) */
+  right: 0;
+  left: 0;
+  margin: 0 auto;
+  max-width: 20rem;
+  width: min(92vw, 20rem);
+  max-height: 60vh;
+  overflow: auto;
+  background: #fff;
+  border-radius: 1rem;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+  padding: 0.25rem;
+  z-index: 60;
+  box-sizing: border-box;
+}
+
+/* falls du eine Trennlinie / Überschrift brauchst */
+.bn-menu-sep { height: 1px; background: rgba(15,23,42,0.06); margin: 0.5rem 0; }
+.bn-menu-heading { padding: 0 0.75rem; font-size: 0.75rem; color: #64748b; margin-bottom: 0.25rem; }
+
+/* check / selected indicator (falls verwendet) */
+.bn-menu-check { margin-left: auto; color: #2563eb; font-weight: 600; }
+
+/* make sure bn-menu-item matches visual style of other icons (uses existing .bn-menu-item) */
+.bn-menu-item { background: transparent; border: 0; padding: 0.5rem 0.75rem; display:flex; align-items:center; gap:0.75rem; width:100%; cursor:pointer; text-align:left; }
+.bn-menu-item--selected { background-color: rgba(37,99,235,0.06); color: #2563eb; }
+
+/* optional: small responsive tweak so panel isn't too wide on very small screens */
+@media (max-width: 360px) {
+  .bn-collapsed-panel { left: 0.5rem; right: 0.5rem; width: auto; }
+}
+

@@ -1,0 +1,51 @@
+/* =========================================================
+   EmptyState
+   ========================================================= */
+
+   .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    color: #4b5563; /* gray-600 */
+  }
+  
+  /* ---------------------------------------------------------
+     Height variants
+     --------------------------------------------------------- */
+  
+  .empty-state--60vh {
+    min-height: 60vh;
+  }
+  
+  .empty-state--full {
+    height: 100%;
+  }
+  
+  /* ---------------------------------------------------------
+     Icon
+     --------------------------------------------------------- */
+  
+  .empty-state__icon {
+    width: 3rem;
+    height: 3rem;
+    color: #9ca3af; /* gray-400 */
+    margin-bottom: 0.75rem;
+  }
+  
+  /* ---------------------------------------------------------
+     Text
+     --------------------------------------------------------- */
+  
+  .empty-state__title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+  }
+  
+  .empty-state__message {
+    font-size: 0.875rem;
+    color: #6b7280; /* text-muted */
+  }
+  

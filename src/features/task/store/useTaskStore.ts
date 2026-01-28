@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import type { Task } from "../Task";
-import { fetchTasksForProcess, deleteTask, fetchTasks, updateTask, createTasksForProcess, updateTaskPositions } from "../api/taskApi";
+import { fetchTasksForProcess, deleteTask, fetchTasks, createTasksForProcess, updateTaskPositions } from "../api/taskApi";
 import { arrayMove } from "@dnd-kit/sortable";
 
 type TaskStore = {

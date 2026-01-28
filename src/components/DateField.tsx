@@ -3,6 +3,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { DayPicker } from "react-day-picker";
 import "react-day-picker/dist/style.css";
+import "./DateField.css";
 
 export function DateField({
   value,
@@ -14,25 +15,20 @@ export function DateField({
   const [open, setOpen] = useState(false);
 
   return (
-    <div className="relative">
+    <div className="date-field">
       <button
         type="button"
-        onClick={() => setOpen(!open)}
-        className="w-full flex items-center justify-between border border-gray-300 rounded-md px-3 py-2 bg-white focus:ring-2 focus:ring-blue-400 focus:border-blue-400"
+        onClick={() => setOpen((v) => !v)}
+        className="date-field__button"
       >
-        <span>{value ? format(value, "dd.MM.yyyy") : "Datum wählen"}</span>
-        <CalendarIcon className="w-4 h-4 text-text-muted" />
+        <span className="date-field__value">
+          {value ? format(value, "dd.MM.yyyy") : "Datum wählen"}
+        </span>
+        <CalendarIcon className="date-field__icon" />
       </button>
 
       {open && (
-        <div
-          className="
-            absolute z-20 mt-2 bg-white border border-border rounded-md shadow-lg p-2
-            w-auto
-            sm:w-[320px]  // Desktop: fix breit
-            w-[100vw] left-0 top-full sm:left-auto sm:right-0  // Mobile: full width
-          "
-        >
+        <div className="date-field__popup">
           <DayPicker
             mode="single"
             selected={value}
@@ -42,7 +38,6 @@ export function DateField({
             }}
           />
         </div>
-
       )}
     </div>
   );

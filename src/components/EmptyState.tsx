@@ -1,30 +1,28 @@
 import React from "react";
+import "./EmptyState.css";
 
 interface EmptyStateProps {
-    title: string;              // z. B. "Prozess nicht gefunden"
-    message: string;            // z. B. "Der angeforderte Prozess existiert nicht oder wurde gelöscht."
-    icon?: React.ReactNode;     // optional eigenes Icon
-    height?: string;            // z. B. "h-[60vh]" oder "h-full"
+    title: string;
+    message: string;
+    icon?: React.ReactNode;
+    height?: "60vh" | "full";
 }
 
 /**
- * Universelle Komponente für "leere" oder "nicht gefundene" Zustände.
- * Ideal für Prozesse, Tasks, oder generische Fehlermeldungen.
+ * Universelle Komponente für leere / nicht gefundene Zustände
  */
 const EmptyState: React.FC<EmptyStateProps> = ({
     title,
     message,
     icon,
-    height = "h-[60vh]",
+    height = "60vh",
 }) => {
     return (
-        <div
-            className={`flex flex-col items-center justify-center ${height} text-center text-gray-600`}
-        >
+        <div className={`empty-state empty-state--${height}`}>
             {icon ?? (
                 <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    className="h-12 w-12 text-gray-400 mb-3"
+                    className="empty-state__icon"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -38,8 +36,8 @@ const EmptyState: React.FC<EmptyStateProps> = ({
                 </svg>
             )}
 
-            <h2 className="text-lg font-semibold mb-1">{title}</h2>
-            <p className="text-sm text-text-muted">{message}</p>
+            <h2 className="empty-state__title">{title}</h2>
+            <p className="empty-state__message">{message}</p>
         </div>
     );
 };

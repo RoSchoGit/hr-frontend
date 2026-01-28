@@ -1,0 +1,60 @@
+/* list layout: nur dort wo die Liste tatsächlich auftaucht */
+.process-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--card-gap);
+  align-items: center; /* zentriert die card-items */
+  padding: 8px;
+}
+  
+  /* Loading */
+  .process-list__loading {
+    min-height: 200px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Placeholder (oben, chat-like) */
+  .process-list__placeholders {
+    padding: 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  
+  @media (min-width: 640px) {
+    .process-list__placeholders {
+      padding: 1rem;
+    }
+  }
+  
+  .process-list__placeholder-item {
+    width: 100%;
+  }
+  
+  /* Scrollbarer Listenbereich */
+  .process-list__scroll {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+  }
+
+  /* Empty state */
+  .process-list__empty {
+    padding: 1rem;
+    text-align: center;
+    font-size: 0.875rem;
+    color: #6b7280; /* muted foreground */
+  }
+  
+  /* Process item wrapper */
+  .process-list__item {
+    width: 100%;
+  }
+  

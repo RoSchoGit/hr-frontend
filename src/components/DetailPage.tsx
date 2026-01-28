@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from "react";
-import Header from "@/components/Header";
 import PageWrapper from "@/components/PageWrapper";
 import SmartText from "@/components/SmartText";
+import "./DetailPage.css";
 
 interface DetailField {
     label: string;
@@ -11,29 +11,43 @@ interface DetailField {
 interface DetailPageProps {
     title?: string | ReactNode;
     description?: string | ReactNode;
-    fields?: DetailField[];       // z. B. Typ, Status, Ersteller
-    lists?: { title: string; items: (string | ReactNode)[] }[]; // z. B. Tasks, History, Industries
-    metadata?: any;               // optional JSON Metadata
+    fields?: DetailField[];
+    lists?: { title: string; items: (string | ReactNode)[] }[];
+    metadata?: any;
 }
 
-const DetailPage: FC<DetailPageProps> = ({ title, description, fields = [], lists = [], metadata }) => {
+const DetailPage: FC<DetailPageProps> = ({
+    title,
+    description,
+    fields = [],
+    lists = [],
+    metadata,
+}) => {
     return (
-        <>
-            <PageWrapper>
-                <SmartText variant="h2" className="text-gray-600">
-                    {title}
-                </SmartText>
+        <PageWrapper>
+            <div className="detail-page">
+                {title && (
+                    <SmartText variant="h2" className="detail-page__title">
+                        {title}
+                    </SmartText>
+                )}
+
                 {description && (
-                    <SmartText variant="h2" className="text-gray-600">
+                    <SmartText variant="h2" className="detail-page__description">
                         {description}
                     </SmartText>
                 )}
 
                 {fields.length > 0 && (
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="detail-page__fields">
                         {fields.map((f) => (
-                            <div key={f.label}>
-                                <SmartText variant="h2" className="font-semibold">{f.label}</SmartText>
+                            <div key={f.label} className="detail-page__field">
+                                <SmartText
+                                    variant="h2"
+                                    className="detail-page__field-label"
+                                >
+                                    {f.label}
+                                </SmartText>
                                 <SmartText>{f.value}</SmartText>
                             </div>
                         ))}
@@ -41,28 +55,47 @@ const DetailPage: FC<DetailPageProps> = ({ title, description, fields = [], list
                 )}
 
                 {lists.map((list) => (
-                    <div key={list.title}>
-                        <SmartText variant="h2" className="font-semibold">{list.title}</SmartText>
-                        <ul className="list-disc pl-6">
+                    <div key={list.title} className="detail-page__list">
+                        <SmartText
+                            variant="h2"
+                            className="detail-page__list-title"
+                        >
+                            {list.title}
+                        </SmartText>
+
+                        <ul className="detail-page__list-items">
                             {list.items.length > 0 ? (
-                                list.items.map((item, i) => <li key={i}><SmartText>{item}</SmartText></li>)
+                                list.items.map((item, i) => (
+                                    <li key={i}>
+                                        <SmartText>{item}</SmartText>
+                                    </li>
+                                ))
                             ) : (
-                                <li><SmartText>Keine Einträge</SmartText></li>
+                                <li>
+                                    <SmartText>Keine Einträge</SmartText>
+                                </li>
                             )}
                         </ul>
                     </div>
                 ))}
 
                 {metadata && (
-                    <div>
-                        <SmartText variant="h2" className="font-semibold">Metadata</SmartText>
-                        <pre className="bg-surface p-2 rounded text-sm overflow-x-auto">
-                            <SmartText>{JSON.stringify(metadata, null, 2)}</SmartText>
+                    <div className="detail-page__metadata">
+                        <SmartText
+                            variant="h2"
+                            className="detail-page__metadata-title"
+                        >
+                            Metadata
+                        </SmartText>
+                        <pre className="detail-page__metadata-content">
+                            <SmartText>
+                                {JSON.stringify(metadata, null, 2)}
+                            </SmartText>
                         </pre>
                     </div>
                 )}
-            </PageWrapper>
-        </>
+            </div>
+        </PageWrapper>
     );
 };
 

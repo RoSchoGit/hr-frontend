@@ -1,0 +1,123 @@
+/* BaseCard.css — nur Werte durch Theme-Variablen ersetzt.
+   Keine Layout-/Position-Änderungen. */
+
+   .base-card {
+    display: flex; /* unverändert */
+    border-width: 2px; /* unverändert (Farbe wird inline gesetzt) */
+    border-style: solid;
+    border-radius: 0.5rem;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    background-color: #ffffff;
+    cursor: pointer;
+    user-select: none;
+    transition: box-shadow 0.2s ease;
+    max-width: var(--card-width-desktop);
+    box-sizing: border-box;
+    /* optional: feste/min-height steuerbar über Theme */
+    min-height: var(--card-height);
+  }
+  
+  .base-card:hover {
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  
+  /* content area (links) — Struktur unverändert, padding/gap aus Theme */
+  .base-card__content {
+    flex: 1;
+    min-width: 0;
+    padding: var(--card-padding);
+    display: flex;
+    flex-direction: column;
+    gap: var(--card-gap);
+  }
+  
+  /* title used when collapsed */
+  .base-card__title {
+    width: 100%;
+    display: block;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-family: var(--font-family-sans);
+  }
+  
+  /* side area (expanded vs collapsed) — Struktur unverändert */
+  .base-card__side {
+    flex-basis: auto;
+    flex-shrink: 0;
+    position: relative;
+  }
+  
+  .base-card__side--expanded {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: calc(var(--card-gap) / 2);
+    padding: 0.25rem;
+  }
+  
+  .base-card__side--collapsed {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    column-gap: calc(var(--card-gap) / 2);
+    padding: 0.5rem;
+  }
+  
+  /* status dots (keine Veränderung der Position/Struktur) */
+  .base-card__status-dots {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    row-gap: calc(var(--card-gap) / 2);
+  }
+  
+  .base-card__status-dot {
+    width: 0.5rem; /* unverändert */
+    height: 0.5rem;
+    border-radius: 9999px;
+    display: inline-block;
+  }
+  
+  /* drag handle */
+  .base-card__drag-handle { cursor: grab; }
+  
+  /* menu */
+  .base-card__menu { position: relative; }
+  
+  .base-card__menu-panel {
+    position: absolute;
+    right: 0;
+    margin-top: 0.25rem;
+    width: 7rem; /* unverändert */
+    background-color: #ffffff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.25rem;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    z-index: 10;
+  }
+  
+  .base-card__menu-item {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    padding: 0.25rem 0.5rem;
+    background: transparent;
+    border: 0;
+    text-align: left;
+    gap: 0.5rem;
+    cursor: pointer;
+    transition: background-color 0.12s ease;
+    font-family: var(--font-family-sans);
+  }
+  
+  /* hover background for menu items (surface) */
+  .base-card__menu-item:hover { background-color: #f1f5f9; }
+  
+  .base-card__menu-item--edit { color: #2563eb; }
+  .base-card__menu-item--delete { color: #dc2626; }
+  .base-card__menu-item--info { color: #111827; }
+  
+  .base-card__menu-item svg { margin-right: 0.25rem; flex-shrink: 0; }
+  

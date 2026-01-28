@@ -1,0 +1,21 @@
+.sortable-task-card {
+    cursor: pointer;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+  }
+  
+.sortable-task-card.dragging {
+    opacity: 0.8;
+    cursor: grabbing;
+  }
+  
+.sortable-task-card__drag-handle {
+    padding: 0.25rem;
+    cursor: grab;
+    background: transparent;
+    border: none;
+  }
+  
+.sortable-task-card__drag-handle:hover {
+    color: #2563eb; /* optional: highlight */
+  }
+  
